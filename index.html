@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ey Panas — Sitio en construcción</title>
+<meta name="description" content="Ey Panas: perros calientes bien envenenados. Estamos calentando la parrilla, ¡muy pronto abrimos!">
+<meta name="theme-color" content="#D6303D">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ey Panas — Sitio en construcción">
+<meta property="og:description" content="Perros calientes bien envenenados. Muy pronto abrimos.">
+<meta property="og:theme-color" content="#D6303D">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236E1420'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-weight='700' font-size='26' fill='%23FBE8C6' text-anchor='middle'%3EEP%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Fredoka:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --rojo-fuego:#D6303D;
+    --rojo-brasa:#B8232E;
+    --vinotinto:#6E1420;
+    --vinotinto-deep:#3D0B12;
+    --naranja-brasa:#F2793C;
+    --mostaza:#FFC93C;
+    --crema-pan:#FBE8C6;
+    --tinta:#240D10;
+    --flama-clara:#FFE49A;
+
+    --font-display:'Bungee','Arial Narrow',Impact,sans-serif;
+    --font-body:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+    --font-mono: ui-monospace,'SF Mono','Cascadia Mono','Courier New',monospace;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh; min-height:100dvh;
+    background:var(--vinotinto-deep);
+    font-family:var(--font-body);
+    color:var(--tinta);
+    overflow-x:hidden;
+    position:relative;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,p{ margin:0; }
+  img,svg{ display:block; max-width:100%; }
+
+  /* ---------- animated background ---------- */
+  .bg{ position:fixed; inset:0; z-index:0; overflow:hidden; }
+  .bg__wash{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(120% 90% at 24% 12%, var(--rojo-brasa) 0%, var(--rojo-fuego) 42%, var(--vinotinto-deep) 100%);
+  }
+  .bg__blob{
+    position:absolute;
+    width:52vmax; height:52vmax;
+    border-radius:50%;
+    filter:blur(70px);
+    opacity:.55;
+    will-change:transform;
+  }
+  .bg__blob--1{
+    top:-18%; left:-14%;
+    background:radial-gradient(circle, var(--mostaza), transparent 68%);
+    mix-blend-mode:overlay;
+    animation:driftA 26s ease-in-out infinite;
+  }
+  .bg__blob--2{
+    bottom:-22%; right:-16%;
+    background:radial-gradient(circle, var(--naranja-brasa), transparent 68%);
+    mix-blend-mode:overlay;
+    animation:driftB 32s ease-in-out infinite;
+  }
+  .bg__blob--3{
+    bottom:8%; left:12%;
+    width:38vmax; height:38vmax;
+    background:radial-gradient(circle, var(--vinotinto), transparent 70%);
+    opacity:.5;
+    mix-blend-mode:multiply;
+    animation:driftC 38s ease-in-out infinite;
+  }
+  @keyframes driftA{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(6vmax,5vmax) scale(1.12); }
+  }
+  @keyframes driftB{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(-5vmax,-6vmax) scale(1.15); }
+  }
+  @keyframes driftC{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(4vmax,-4vmax) scale(1.08); }
+  }
+
+  .bg__mosaic-wrap{
+    position:absolute; inset:-15%;
+    opacity:.16;
+    mix-blend-mode:soft-light;
+    animation:mosaicDrift 60s linear infinite;
+  }
+  .bg__mosaic{ width:100%; height:100%; display:block; }
+
+  @keyframes mosaicDrift{
+    from{ transform:translate(0,0); }
+    to{ transform:translate(-260px,-260px); }
+  }
+
+  .bg__grain{
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(0,0,0,.5) 1px, transparent 1px);
+    background-size:3px 3px;
+    opacity:.05;
+    mix-blend-mode:overlay;
+  }
+
+  .bg__vignette{
+    position:absolute; inset:0;
+    background:radial-gradient(80% 70% at 50% 42%, transparent 45%, rgba(20,4,7,.55) 100%);
+  }
+
+  /* ---------- layout ---------- */
+  .page{
+    position:relative; z-index:1;
+    min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:
+      max(28px, env(safe-area-inset-top))
+      max(20px, env(safe-area-inset-right))
+      max(36px, env(safe-area-inset-bottom))
+      max(20px, env(safe-area-inset-left));
+  }
+
+  /* ---------- mascot ---------- */
+  .mascot-wrap{
+    position:relative;
+    display:flex; justify-content:center;
+    margin-bottom:-34px;
+    z-index:2;
+    transform:translate(var(--px,0px), var(--py,0px));
+    transition:transform .35s ease-out;
+  }
+  .mascot-glow{
+    position:absolute; left:50%; top:50%;
+    width:230px; height:230px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(255,201,60,.55), transparent 70%);
+    filter:blur(20px);
+    z-index:0;
+    animation:glowPulse 3.4s ease-in-out infinite;
+  }
+  .mascot{
+    position:relative; z-index:1;
+    width:clamp(148px, 40vw, 208px);
+    filter:drop-shadow(0 12px 16px rgba(36,13,16,.4));
+    animation:floatMascot 3.6s ease-in-out infinite;
+  }
+  @keyframes floatMascot{
+    0%,100%{ transform:translateY(0) rotate(-1.6deg); }
+    50%{ transform:translateY(-14px) rotate(1.6deg); }
+  }
+  @keyframes glowPulse{
+    0%,100%{ opacity:.5; transform:translate(-50%,-50%) scale(.9); }
+    50%{ opacity:.85; transform:translate(-50%,-50%) scale(1.08); }
+  }
+
+  /* ---------- ticket card ---------- */
+  .card{
+    position:relative;
+    width:min(94vw, 430px);
+    z-index:1;
+  }
+  .tag{
+    position:absolute;
+    top:20px; right:-38px;
+    background:var(--mostaza);
+    color:var(--vinotinto);
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    padding:6px 42px;
+    transform:rotate(38deg);
+    box-shadow:0 3px 10px rgba(20,4,7,.35);
+    white-space:nowrap;
+    z-index:3;
+  }
+  .card__paper{
+    position:relative; z-index:1;
+    background:var(--crema-pan);
+    border-radius:26px 26px 0 0;
+    padding:52px clamp(20px,6vw,34px) 26px;
+    box-shadow:
+      0 20px 38px rgba(20,4,7,.38),
+      0 2px 0 rgba(255,255,255,.45) inset;
+  }
+  .card__torn{
+    height:15px;
+    width:100%;
+    background-image:
+      linear-gradient(135deg, var(--crema-pan) 25%, transparent 25.5%),
+      linear-gradient(-135deg, var(--crema-pan) 25%, transparent 25.5%);
+    background-size:18px 18px;
+    background-position:0 0, 9px 0;
+    background-repeat:repeat-x;
+  }
+
+  .kicker{
+    text-align:center;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--vinotinto);
+    opacity:.85;
+    margin-bottom:2px;
+  }
+  .wordmark{
+    display:flex; flex-direction:column; align-items:center;
+    line-height:.86;
+  }
+  .wordmark__ey{
+    font-family:var(--font-display);
+    font-size:clamp(1.1rem, 5vw, 1.5rem);
+    letter-spacing:.06em;
+    color:var(--crema-pan);
+    -webkit-text-stroke:1.5px var(--vinotinto);
+    paint-order:stroke fill;
+    text-shadow:2px 2px 0 var(--vinotinto);
+  }
+  .wordmark__panas{
+    font-family:var(--font-display);
+    font-size:clamp(2.5rem, 13vw, 3.7rem);
+    color:var(--crema-pan);
+    -webkit-text-stroke:2.5px var(--vinotinto);
+    paint-order:stroke fill;
+    text-shadow:3px 3px 0 var(--vinotinto);
+    margin-top:-2px;
+  }
+  .tagline{
+    text-align:center;
+    font-family:var(--font-body);
+    font-weight:500;
+    font-size:clamp(.85rem, 3vw, 1rem);
+    color:var(--vinotinto);
+    opacity:.85;
+    margin-top:8px;
+  }
+
+  .divider{
+    border:none;
+    border-top:2px dashed rgba(110,20,32,.28);
+    margin:20px 0;
+  }
+
+  .headline{
+    text-align:center;
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:clamp(1.15rem, 4.4vw, 1.5rem);
+    color:var(--tinta);
+    margin-bottom:8px;
+  }
+  .subtext{
+    text-align:center;
+    font-family:var(--font-body);
+    font-weight:400;
+    font-size:clamp(.9rem, 3.2vw, 1rem);
+    color:rgba(36,13,16,.78);
+    line-height:1.5;
+  }
+
+  .status{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    margin:20px 0 16px;
+    font-family:var(--font-mono);
+    font-size:clamp(.78rem, 2.6vw, .88rem);
+    color:var(--vinotinto);
+  }
+  .status__dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--mostaza);
+    flex:none;
+    animation:pulseDot 1.8s ease-out infinite;
+  }
+  @keyframes pulseDot{
+    0%{ box-shadow:0 0 0 0 rgba(255,201,60,.55); }
+    70%{ box-shadow:0 0 0 8px rgba(255,201,60,0); }
+    100%{ box-shadow:0 0 0 0 rgba(255,201,60,0); }
+  }
+  .status__caret{ opacity:.7; }
+  .status__text{ transition:opacity .25s ease; }
+
+  .progress__label{
+    text-align:center;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:11px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--vinotinto);
+    opacity:.8;
+    margin-bottom:8px;
+  }
+  .progress__barcode{
+    position:relative;
+    height:32px;
+    border-radius:5px;
+    overflow:hidden;
+    background:repeating-linear-gradient(90deg,
+      var(--tinta) 0 2px, transparent 2px 6px,
+      var(--tinta) 6px 8px, transparent 8px 13px,
+      var(--tinta) 13px 16px, transparent 16px 22px,
+      var(--tinta) 22px 23px, transparent 23px 28px);
+    opacity:.82;
+  }
+  .progress__barcode::after{
+    content:"";
+    position:absolute; inset:0;
+    width:45%;
+    background:linear-gradient(90deg, transparent, rgba(255,201,60,.65), transparent);
+    animation:scanLine 2.6s ease-in-out infinite;
+  }
+  @keyframes scanLine{
+    0%{ transform:translateX(-140%); }
+    100%{ transform:translateX(320%); }
+  }
+
+  .footer{
+    margin-top:24px;
+    text-align:center;
+    font-family:var(--font-body);
+    font-size:.8rem;
+    letter-spacing:.02em;
+    color:var(--crema-pan);
+    opacity:.82;
+    padding:0 12px;
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .card{ transition:transform .35s ease; }
+    .card:hover{ transform:translateY(-3px); }
+  }
+
+  @media (max-width:360px){
+    .mascot{ width:clamp(128px, 38vw, 170px); }
+    .tag{ right:-44px; font-size:10px; padding:5px 40px; }
+  }
+
+  @media (min-width:900px){
+    .card__paper{ padding:60px 44px 30px; }
+    .footer{ font-size:.86rem; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" aria-hidden="true">
+    <div class="bg__wash"></div>
+    <div class="bg__blob bg__blob--1"></div>
+    <div class="bg__blob bg__blob--2"></div>
+    <div class="bg__blob bg__blob--3"></div>
+
+    <div class="bg__mosaic-wrap">
+      <svg class="bg__mosaic" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <g id="mzHotdog">
+            <rect x="0" y="10" width="64" height="22" rx="11" fill="#FBE8C6"/>
+            <rect x="7" y="0" width="50" height="18" rx="9" fill="#F2793C"/>
+            <path d="M10,12 L20,4 L30,12 L40,4 L50,12" stroke="#FFC93C" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <g id="mzFries">
+            <path d="M4,44 L38,44 L33,10 L9,10 Z" fill="#FBE8C6"/>
+            <path d="M4,44 L38,44 L33,10 L9,10 Z" fill="none" stroke="#D6303D" stroke-width="2"/>
+            <rect x="9" y="-8" width="6" height="22" rx="2" fill="#FFC93C" transform="rotate(-6 12 3)"/>
+            <rect x="18" y="-12" width="6" height="26" rx="2" fill="#FFC93C"/>
+            <rect x="27" y="-8" width="6" height="22" rx="2" fill="#FFC93C" transform="rotate(6 30 3)"/>
+          </g>
+          <g id="mzDrink">
+            <path d="M6,12 L36,12 L30,50 L12,50 Z" fill="#D6303D"/>
+            <rect x="3" y="4" width="36" height="10" rx="4" fill="#FBE8C6"/>
+            <rect x="18" y="-10" width="6" height="18" rx="2" fill="#FBE8C6"/>
+          </g>
+
+          <pattern id="foodMosaic" width="260" height="260" patternUnits="userSpaceOnUse" patternTransform="rotate(-10)">
+            <use href="#mzHotdog" transform="translate(15,35) scale(1.05) rotate(-8)"/>
+            <use href="#mzFries" transform="translate(158,10) scale(0.9) rotate(10)"/>
+            <use href="#mzDrink" transform="translate(70,152) scale(0.95) rotate(-6)"/>
+            <use href="#mzHotdog" transform="translate(188,168) scale(0.8) rotate(16)"/>
+            <use href="#mzFries" transform="translate(-14,168) scale(0.75) rotate(-14)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#foodMosaic)"/>
+      </svg>
+    </div>
+
+    <div class="bg__grain"></div>
+    <div class="bg__vignette"></div>
+  </div>
+
+  <main class="page">
+
+    <div class="mascot-wrap" id="mascotWrap">
+      <div class="mascot-glow" aria-hidden="true"></div>
+      <svg class="mascot" viewBox="0 0 320 410" role="img" aria-label="Mascota de Ey Panas: un perro caliente con lentes de sol y cabello de fuego" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sausageGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F2793C"/>
+            <stop offset="100%" stop-color="#D6303D"/>
+          </linearGradient>
+          <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFC93C"/>
+            <stop offset="100%" stop-color="#F2793C"/>
+          </linearGradient>
+        </defs>
+
+        <ellipse cx="122" cy="400" rx="24" ry="10" fill="#240D10"/>
+        <ellipse cx="198" cy="400" rx="24" ry="10" fill="#240D10"/>
+        <rect x="-14" y="0" width="28" height="76" rx="14" fill="#F2793C" stroke="#6E1420" stroke-width="5" transform="translate(138,328) rotate(-8)"/>
+        <rect x="-14" y="0" width="28" height="76" rx="14" fill="#F2793C" stroke="#6E1420" stroke-width="5" transform="translate(182,328) rotate(8)"/>
+
+        <rect x="-11" y="0" width="22" height="98" rx="11" fill="#FBE8C6" stroke="#6E1420" stroke-width="5" transform="translate(96,216) rotate(18)"/>
+        <rect x="-11" y="0" width="22" height="98" rx="11" fill="#FBE8C6" stroke="#6E1420" stroke-width="5" transform="translate(224,216) rotate(-18)"/>
+
+        <rect x="90" y="203" width="140" height="138" rx="58" fill="#FBE8C6" stroke="#6E1420" stroke-width="6"/>
+
+        <path d="M104,270 L127,253 L149,283 L171,253 L193,283 L214,268" fill="none" stroke="#FFC93C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <rect x="118" y="93" width="84" height="118" rx="41" fill="url(#sausageGrad)" stroke="#6E1420" stroke-width="6"/>
+
+        <rect x="128" y="148" width="64" height="32" rx="13" fill="#240D10"/>
+        <path d="M134,156 L150,156" stroke="#FBE8C6" stroke-width="4" stroke-linecap="round" opacity=".5"/>
+
+        <path d="M138,194 Q160,208 182,194" fill="none" stroke="#240D10" stroke-width="5" stroke-linecap="round"/>
+
+        <path d="M160,16 C178,43 200,60 194,93 C190,116 176,126 160,126 C144,126 130,116 126,93 C120,60 142,43 160,16 Z" fill="url(#flameGrad)" stroke="#6E1420" stroke-width="5"/>
+        <path d="M160,42 C170,59 180,69 176,87 C173,99 166,105 160,105 C154,105 147,99 144,87 C140,69 150,59 160,42 Z" fill="#FFE49A"/>
+      </svg>
+    </div>
+
+    <section class="card">
+      <span class="tag">En construcción</span>
+      <div class="card__paper">
+        <p class="kicker">Perros calientes</p>
+        <h1 class="wordmark">
+          <span class="wordmark__ey">Ey</span>
+          <span class="wordmark__panas">Panas</span>
+        </h1>
+        <p class="tagline">bien envenenados, bien queridos</p>
+
+        <hr class="divider">
+
+        <h2 class="headline">Estamos calentando la parrilla</h2>
+        <p class="subtext">Muy pronto abrimos para servirte los perros calientes más envenenados de la ciudad. Vuelve pronto, pana.</p>
+
+        <hr class="divider">
+
+        <div class="status" role="status" aria-live="polite">
+          <span class="status__dot" aria-hidden="true"></span>
+          <span class="status__caret" aria-hidden="true">»</span>
+          <span class="status__text" id="statusText">Cortando las papas…</span>
+        </div>
+
+        <div class="progress">
+          <p class="progress__label">Preparando tu antojo</p>
+          <div class="progress__barcode" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="card__torn" aria-hidden="true"></div>
+    </section>
+
+    <p class="footer">© 2026 Ey Panas — hecho con cariño para los panas.</p>
+
+  </main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var phrases = [
+    "Cortando las papas…",
+    "Calentando la parrilla…",
+    "Preparando las salsas…",
+    "Afinando los últimos detalles…",
+    "¡Ya casi está listo!"
+  ];
+  var el = document.getElementById('statusText');
+  var i = 0;
+  if(el && !reduce){
+    setInterval(function(){
+      i = (i+1) % phrases.length;
+      el.style.opacity = 0;
+      setTimeout(function(){
+        el.textContent = phrases[i];
+        el.style.opacity = 1;
+      }, 260);
+    }, 2800);
+  }
+
+  var wrap = document.getElementById('mascotWrap');
+  var canHover = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if(wrap && canHover && !reduce){
+    document.addEventListener('mousemove', function(e){
+      var x = (e.clientX / window.innerWidth - 0.5) * 16;
+      var y = (e.clientY / window.innerHeight - 0.5) * 12;
+      wrap.style.setProperty('--px', x.toFixed(2) + 'px');
+      wrap.style.setProperty('--py', y.toFixed(2) + 'px');
+    }, { passive:true });
+  }
+})();
+</script>
+
+</body>
+  </html>
