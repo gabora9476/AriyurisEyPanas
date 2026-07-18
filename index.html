@@ -12,7 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Ey Panas">
 <meta name="format-detection" content="telephone=no">
 
-<link rel="icon" type="image/png" href="https://ejemplo.com/favicon.png"> <!-- TODO: reemplaza este link por la URL real del favicon -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/QFv5y5m6/favicon.png">
+<link rel="apple-touch-icon" href="https://i.ibb.co/QFv5y5m6/favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,10 +100,17 @@
     border-bottom:1px solid rgba(255,201,60,.18);
   }
   .brand{ display:flex; align-items:center; gap:9px; min-width:0; }
-  .brand__mark{ width:34px; height:34px; flex:none; }
-  .brand__text{ display:flex; flex-direction:column; line-height:.95; min-width:0; }
-  .brand__ey{ font-family:var(--font-display); font-size:.62rem; letter-spacing:.08em; color:var(--mostaza); }
-  .brand__panas{ font-family:var(--font-display); font-size:1.05rem; color:var(--crema-pan); -webkit-text-stroke:1px var(--vinotinto); paint-order:stroke fill; }
+  .brand__logo{
+    width:50px; height:48px; flex:none;
+    overflow:hidden;
+    position:relative;
+  }
+  .brand__logo img{
+    position:absolute;
+    top:-20px; left:-19px;
+    width:88px; height:88px;
+    max-width:none;
+  }
 
   .cart-btn{
     position:relative;
@@ -763,15 +771,8 @@
   <!-- ================= TOP BAR ================= -->
   <header class="topbar">
     <div class="brand">
-      <svg class="brand__mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="64" height="64" rx="16" fill="#6E1420"/>
-        <rect x="18" y="22" width="28" height="24" rx="12" fill="#FBE8C6"/>
-        <rect x="22" y="10" width="20" height="20" rx="9" fill="#F2793C"/>
-        <rect x="24" y="17" width="16" height="8" rx="4" fill="#240D10"/>
-      </svg>
-      <div class="brand__text">
-        <span class="brand__ey">EY</span>
-        <span class="brand__panas">PANAS</span>
+      <div class="brand__logo">
+        <img src="https://i.ibb.co/kVyZgBqM/Logotipo-ey-panas-letrasnalncas.png" alt="Ey Panas" loading="eager">
       </div>
     </div>
 
@@ -857,7 +858,7 @@
       <div class="pager" id="pager-bebidas"></div>
     </section>
 
-    <p class="catalog-footer">Precios en referencia local. Ey Panas — hecho con cariño para los panas.</p>
+    <p class="catalog-footer">Ey Panas — hecho con cariño para los panas.</p>
     <p class="catalog-footer">© 2026 Ey Panas. Todos los derechos reservados. · Powered by <a href="https://wa.me/584228745777" target="_blank" rel="noopener">gabora646</a></p>
     <div class="social-row">
       <a class="social-btn" href="https://www.instagram.com/eypanas" target="_blank" rel="noopener" aria-label="Síguenos en Instagram">
