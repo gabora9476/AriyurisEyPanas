@@ -1088,7 +1088,7 @@
 
   // Métodos de pago que se cobran en bolívares y por lo tanto necesitan
   // convertir el total (Ref.) a Bs usando la tasa euro del BCV.
-  var BS_PAY_METHODS = ["pago-movil", "transferencia", "wally"];
+  var BS_PAY_METHODS = ["pago-movil", "transferencia"];
 
   /* =========================================================
      TASA BCV (EURO) — conversión automática a bolívares
@@ -1602,7 +1602,7 @@
         bsEl.style.display = "none";
         return;
       }
-      bsEl.textContent = "≈ " + formatBs(bs) + " (tasa BCV/Euro: " + bcvEurRate.toFixed(2) + " Bs)";
+      bsEl.textContent = "≈ " + formatBs(bs);
       bsEl.style.display = "";
     };
     if(bcvEurRate){
@@ -1687,7 +1687,7 @@
     if(BS_PAY_METHODS.indexOf(selectedPay) !== -1){
       var bs = bsAmount(cartTotal());
       if(bs !== null){
-        lines.push("Total en bolívares: " + formatBs(bs) + " (tasa BCV/Euro: " + bcvEurRate.toFixed(2) + " Bs)");
+        lines.push("Total en bolívares: " + formatBs(bs));
       }
     }
     lines.push("");
