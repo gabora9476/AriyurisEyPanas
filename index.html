@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- version-cinta-promos: 2 (si ves este comentario en "Ver código fuente" del navegador, tienes el archivo correcto) -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -732,6 +733,116 @@
   }
   .toast svg{ width:16px; height:16px; flex:none; color:var(--mostaza); }
   .toast.is-shown{ opacity:1; transform:translate(-50%,0); }
+
+  /* =====================================================
+     CINTA PROMOCIONAL (debajo del banner)
+  ===================================================== */
+  .promo-ticker{
+    position:relative; z-index:2;
+    overflow:hidden;
+    background:linear-gradient(90deg, var(--rojo-brasa), var(--naranja-brasa), var(--rojo-brasa));
+    border-top:1.5px solid rgba(255,201,60,.4);
+    border-bottom:1.5px solid rgba(255,201,60,.4);
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.15);
+  }
+  .promo-ticker[hidden]{ display:none; }
+  .promo-ticker__track{
+    display:flex; align-items:center;
+    width:max-content;
+    will-change:transform;
+    animation:tickerRTL 18s linear infinite;
+  }
+  .promo-ticker.dir-ltr .promo-ticker__track{ animation-name:tickerLTR; }
+  .promo-ticker__set{ display:flex; align-items:center; flex:none; }
+  .promo-ticker__item{
+    display:flex; align-items:center; gap:8px; flex:none;
+    padding:9px 26px;
+    font-family:var(--font-display);
+    font-size:.72rem; letter-spacing:.02em;
+    color:var(--crema-pan);
+    text-shadow:1px 1px 0 rgba(0,0,0,.22);
+    white-space:nowrap;
+    border-right:1px dashed rgba(251,232,198,.4);
+  }
+  .promo-ticker__item svg{ width:15px; height:15px; flex:none; color:var(--mostaza); }
+  @keyframes tickerRTL{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @keyframes tickerLTR{ from{ transform:translateX(-50%); } to{ transform:translateX(0); } }
+  @media (prefers-reduced-motion:reduce){ .promo-ticker__track{ animation:none; } }
+
+  /* =====================================================
+     DIÁLOGO DE PREMIO (promo por compra / código premiado)
+  ===================================================== */
+  .promo-win-layer{ position:fixed; inset:0; z-index:75; display:flex; align-items:center; justify-content:center; padding:20px; visibility:hidden; pointer-events:none; }
+  .promo-win-layer.is-open{ visibility:visible; pointer-events:auto; }
+  .promo-win-layer__scrim{ position:absolute; inset:0; background:rgba(20,4,7,.72); opacity:0; transition:opacity .25s ease; }
+  .promo-win-layer.is-open .promo-win-layer__scrim{ opacity:1; }
+  .promo-win-card{
+    position:relative; z-index:1;
+    width:100%; max-width:360px;
+    background:linear-gradient(165deg, var(--crema-pan), #FBDFA3);
+    border-radius:26px;
+    padding:34px 24px 26px;
+    text-align:center;
+    box-shadow:0 26px 60px rgba(20,4,7,.55);
+    transform:translateY(18px) scale(.94); opacity:0;
+    transition:transform .3s cubic-bezier(.32,1.4,.4,1), opacity .25s ease;
+    overflow:hidden;
+  }
+  .promo-win-layer.is-open .promo-win-card{ transform:translateY(0) scale(1); opacity:1; }
+  .promo-win-card__close{
+    position:absolute; top:12px; right:12px; z-index:2;
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(110,20,32,.1); color:var(--vinotinto);
+  }
+  .promo-win-card__close svg{ width:15px; height:15px; }
+  .promo-win-card__confetti{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .promo-win-card__confetti span{
+    position:absolute; top:-12%; border-radius:2px;
+    animation:confettiFall 3.2s ease-in infinite;
+    opacity:.9;
+  }
+  @keyframes confettiFall{ 0%{ transform:translateY(0) rotate(0deg); opacity:.95; } 100%{ transform:translateY(340px) rotate(260deg); opacity:0; } }
+  .promo-win-card__badge{
+    width:66px; height:66px; margin:0 auto 10px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #FFE9AD, var(--mostaza));
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.9rem;
+    box-shadow:0 10px 20px rgba(214,48,61,.28);
+    position:relative; z-index:1;
+  }
+  .promo-win-card__kicker{ position:relative; z-index:1; font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--rojo-brasa); }
+  .promo-win-card__title{
+    position:relative; z-index:1;
+    font-family:var(--font-display); font-size:1.35rem; color:var(--vinotinto);
+    margin-top:6px; line-height:1.25;
+    -webkit-text-stroke:.6px rgba(110,20,32,.15);
+  }
+  .promo-win-card__prize{ position:relative; z-index:1; font-size:.92rem; font-weight:600; color:var(--tinta); margin-top:10px; line-height:1.4; }
+  .promo-win-card__codebox{
+    position:relative; z-index:1;
+    margin-top:18px; padding:14px 12px;
+    background:rgba(110,20,32,.08);
+    border:2px dashed rgba(110,20,32,.3);
+    border-radius:16px;
+  }
+  .promo-win-card__codelabel{ display:block; font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(36,13,16,.55); }
+  .promo-win-card__code{ display:block; font-family:var(--font-mono, monospace); font-size:1.5rem; font-weight:700; letter-spacing:.06em; color:var(--rojo-fuego); margin-top:4px; word-break:break-all; }
+  .promo-win-card__status{ display:none; position:relative; z-index:1; margin-top:10px; font-size:.78rem; font-weight:700; color:var(--rojo-brasa); background:rgba(214,48,61,.12); padding:8px 12px; border-radius:10px; }
+  .promo-win-card__status.is-shown{ display:block; }
+  .promo-win-card__copy{
+    position:relative; z-index:1;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; margin-top:16px;
+    background:var(--rojo-fuego); color:#fff; font-weight:700; font-size:.9rem;
+    padding:13px 16px; min-height:46px; border-radius:14px;
+    box-shadow:0 8px 18px rgba(20,4,7,.3);
+    transition:transform .15s ease;
+  }
+  .promo-win-card__copy:active{ transform:scale(.97); }
+  .promo-win-card__copy svg{ width:16px; height:16px; }
+  .promo-win-card__hint{ position:relative; z-index:1; font-size:.74rem; color:rgba(36,13,16,.6); margin-top:12px; line-height:1.4; }
 </style>
 </head>
 <body>
@@ -798,6 +909,11 @@
     <h1 class="hero__title">Arma tu perro</h1>
     <p class="hero__sub">Escoge, personaliza y añade al carrito. Al final ordenas directo por WhatsApp, sin vueltas.</p>
   </section>
+
+  <!-- ================= CINTA PROMOCIONAL ================= -->
+  <div class="promo-ticker" id="promoTicker" hidden aria-live="off">
+    <div class="promo-ticker__track" id="promoTickerTrack"></div>
+  </div>
 
   <!-- ================= CATEGORY RAIL ================= -->
   <nav class="rail" id="rail" aria-label="Categorías del menú">
@@ -1045,6 +1161,31 @@
   <div class="toast" id="toast" role="status" aria-live="polite">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span id="toastText">Añadido al carrito</span>
+  </div>
+
+  <!-- ================= DIÁLOGO DE PREMIO ================= -->
+  <div class="promo-win-layer" id="promoWinModal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <div class="promo-win-layer__scrim" data-close-promowin></div>
+    <div class="promo-win-card">
+      <button class="promo-win-card__close" type="button" data-close-promowin aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+      <div class="promo-win-card__confetti" id="pwConfetti" aria-hidden="true"></div>
+      <div class="promo-win-card__badge" aria-hidden="true">🎉</div>
+      <p class="promo-win-card__kicker" id="pwKicker">¡Eres un ganador!</p>
+      <h2 class="promo-win-card__title" id="pwTitle">¡Felicidades!</h2>
+      <p class="promo-win-card__prize" id="pwPrize">Ganaste un premio</p>
+      <div class="promo-win-card__codebox">
+        <span class="promo-win-card__codelabel">Tu código</span>
+        <span class="promo-win-card__code" id="pwCode">—</span>
+      </div>
+      <p class="promo-win-card__status" id="pwStatus"></p>
+      <button class="promo-win-card__copy" type="button" id="pwCopyBtn">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Copiar código</span>
+      </button>
+      <p class="promo-win-card__hint">Muéstralo en caja para reclamarlo. Guarda una captura por si acaso.</p>
+    </div>
   </div>
 
 <script>
@@ -1699,6 +1840,8 @@
     var url = "https://wa.me/" + ORDER_WHATSAPP_NUMBER + "?text=" + text;
     window.open(url, "_blank", "noopener");
 
+    registrarPosiblePremioCompra(cartTotal(), currentOrderNumber);
+
     closeCheckout();
     cart = [];
     renderCart();
@@ -1724,6 +1867,270 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function(){ toast.classList.remove("is-shown"); }, 2400);
   }
+
+  /* =========================================================
+     CONFIGURACIÓN DEL SITIO (cinta + promociones)
+     Lee la fila única de "sitio_config" (id = 1). Todo esto se
+     administra desde el panel admin; aquí solo la consumimos.
+  ========================================================= */
+  var SITE_CONFIG = null;
+  var SITE_CONFIG_ERROR = null;
+  var DAY_KEYS = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+
+  function todayKey(){ return DAY_KEYS[new Date().getDay()]; }
+
+  function loadSitioConfig(){
+    return fetch(SUPABASE_URL + "/rest/v1/sitio_config?select=*&id=eq.1", {
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Authorization":"Bearer " + SUPABASE_ANON_KEY }
+    }).then(function(res){
+      if(!res.ok){
+        return res.text().then(function(body){
+          throw new Error("HTTP " + res.status + " leyendo sitio_config: " + body);
+        });
+      }
+      return res.json();
+    }).then(function(rows){
+      SITE_CONFIG = (rows && rows[0]) || null;
+      SITE_CONFIG_ERROR = SITE_CONFIG ? null : "La tabla sitio_config respondió vacía (¿existe la fila con id=1?).";
+      return SITE_CONFIG;
+    }).catch(function(err){
+      console.error("Error cargando configuración del sitio (cinta/promos):", err);
+      SITE_CONFIG_ERROR = (err && err.message) || String(err);
+      SITE_CONFIG = null;
+      return null;
+    });
+  }
+
+  /* ---------- Panel de diagnóstico (solo visible con ?debug=1 en la URL) ---------- */
+  function maybeShowDebugPanel(){
+    var params = new URLSearchParams(window.location.search);
+    if(!params.get("debug")) return;
+
+    var lines = [];
+    lines.push("=== DIAGNÓSTICO DE PROMOS (EyPanas) ===");
+    lines.push("Hoy detectado como: " + todayKey());
+    lines.push("SUPABASE_URL: " + SUPABASE_URL);
+    lines.push("");
+    if(SITE_CONFIG_ERROR){
+      lines.push("❌ ERROR al leer sitio_config:");
+      lines.push(SITE_CONFIG_ERROR);
+      lines.push("");
+      lines.push("Esto casi siempre significa: (1) no se ejecutó el SQL de instalación en este");
+      lines.push("proyecto de Supabase, o (2) la política de lectura pública no quedó activa.");
+    } else if(!SITE_CONFIG){
+      lines.push("⚠️ No se recibió configuración (sitio_config vino vacío).");
+    } else {
+      lines.push("✅ sitio_config leído correctamente:");
+      lines.push("  cinta_activa: " + SITE_CONFIG.cinta_activa);
+      lines.push("  cinta_texto: " + JSON.stringify(SITE_CONFIG.cinta_texto));
+      lines.push("  cinta_direccion: " + SITE_CONFIG.cinta_direccion);
+      lines.push("  cinta_dias: " + JSON.stringify(SITE_CONFIG.cinta_dias));
+      lines.push("  cinta_velocidad: " + SITE_CONFIG.cinta_velocidad);
+      lines.push("  → ¿Debería verse la cinta hoy?: " + (
+        SITE_CONFIG.cinta_activa && (!Array.isArray(SITE_CONFIG.cinta_dias) || SITE_CONFIG.cinta_dias.length === 0 || SITE_CONFIG.cinta_dias.indexOf(todayKey()) !== -1) && String(SITE_CONFIG.cinta_texto||"").trim()
+          ? "SÍ" : "NO"
+      ));
+      lines.push("");
+      lines.push("  promo_compra_activa: " + SITE_CONFIG.promo_compra_activa);
+      lines.push("  promo_compra_monto_minimo: " + SITE_CONFIG.promo_compra_monto_minimo);
+      lines.push("  promo_compra_premio_texto: " + JSON.stringify(SITE_CONFIG.promo_compra_premio_texto));
+      lines.push("");
+      lines.push("  promo_premiada_activa: " + SITE_CONFIG.promo_premiada_activa);
+      lines.push("  catalogo_url: " + JSON.stringify(SITE_CONFIG.catalogo_url));
+    }
+    lines.push("");
+    var pending = loadPendingWin();
+    lines.push("Cupón pendiente guardado en este navegador: " + (pending ? JSON.stringify(pending) : "(ninguno)"));
+
+    var panel = document.createElement("pre");
+    panel.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;max-height:46vh;overflow:auto;margin:0;padding:12px;background:#0b0b0b;color:#7CFC7C;font:11px/1.5 monospace;white-space:pre-wrap;border-top:3px solid #FFC93C;";
+    panel.textContent = lines.join("\n");
+    document.body.appendChild(panel);
+  }
+
+  /* ---------- Cinta promocional ---------- */
+  function renderTicker(cfg){
+    var wrap = byId("promoTicker");
+    var track = byId("promoTickerTrack");
+    if(!wrap || !track) return;
+
+    if(!cfg || cfg.cinta_activa !== true){ wrap.hidden = true; return; }
+
+    var dias = Array.isArray(cfg.cinta_dias) ? cfg.cinta_dias : [];
+    if(dias.length && dias.indexOf(todayKey()) === -1){ wrap.hidden = true; return; }
+
+    var texto = String(cfg.cinta_texto || "").trim();
+    if(!texto){ wrap.hidden = true; return; }
+
+    var icon = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2 14.5 9 22 12 14.5 15 12 22 9.5 15 2 12 9.5 9 12 2Z" fill="currentColor"/></svg>';
+    var item = '<span class="promo-ticker__item">' + icon + escapeHtml(texto) + '</span>';
+    var set = '<span class="promo-ticker__set">' + item + item + item + item + '</span>';
+    track.innerHTML = set + set; // duplicado para el loop continuo
+
+    wrap.classList.toggle("dir-ltr", cfg.cinta_direccion === "izq-der");
+    var seconds = Number(cfg.cinta_velocidad);
+    track.style.animationDuration = (seconds > 0 ? seconds : 18) + "s";
+
+    wrap.hidden = false;
+  }
+
+  /* ---------- Diálogo de premio ---------- */
+  var promoWinModal = byId("promoWinModal");
+
+  function buildConfetti(){
+    var box = byId("pwConfetti");
+    if(!box) return;
+    var colors = ["#D6303D","#FFC93C","#F2793C","#2E9E5B","#6E1420"];
+    var html = "";
+    for(var i = 0; i < 16; i++){
+      var left = (Math.random() * 100).toFixed(1);
+      var delay = (Math.random() * 2.2).toFixed(2);
+      var dur = (2.3 + Math.random() * 1.3).toFixed(2);
+      var w = 5 + Math.round(Math.random() * 5);
+      var color = colors[i % colors.length];
+      html += '<span style="left:' + left + '%;width:' + w + 'px;height:' + Math.round(w * 2.2) + 'px;background:' + color + ';animation-delay:' + delay + 's;animation-duration:' + dur + 's;"></span>';
+    }
+    box.innerHTML = html;
+  }
+
+  function showWinDialog(opts){
+    byId("pwKicker").textContent = opts.kicker || "¡Eres un ganador!";
+    byId("pwTitle").textContent = opts.title || "¡Felicidades!";
+    byId("pwPrize").textContent = opts.prize || "";
+    byId("pwCode").textContent = opts.codigo || "—";
+
+    var statusEl = byId("pwStatus");
+    if(opts.usado){
+      statusEl.textContent = "Este código ya fue canjeado anteriormente.";
+      statusEl.classList.add("is-shown");
+    } else {
+      statusEl.textContent = "";
+      statusEl.classList.remove("is-shown");
+    }
+
+    buildConfetti();
+    promoWinModal.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeWinDialog(){
+    promoWinModal.classList.remove("is-open");
+    if(!productModal.classList.contains("is-open") && !cartLayer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open")){
+      document.body.style.overflow = "";
+    }
+  }
+  document.querySelectorAll("[data-close-promowin]").forEach(function(b){ b.addEventListener("click", closeWinDialog); });
+
+  byId("pwCopyBtn").addEventListener("click", function(){
+    var code = byId("pwCode").textContent;
+    function done(){ showToast("Código copiado"); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(done).catch(function(){ fallbackCopyText(code); done(); });
+    } else {
+      fallbackCopyText(code); done();
+    }
+  });
+
+  function fallbackCopyText(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ---------- Promo "por monto de compra" ---------- */
+  var PENDING_WIN_KEY = "eypanas_premio_pendiente";
+
+  function savePendingWin(data){
+    try{ localStorage.setItem(PENDING_WIN_KEY, JSON.stringify(data)); }catch(e){}
+  }
+  function loadPendingWin(){
+    try{ var raw = localStorage.getItem(PENDING_WIN_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+  }
+  function clearPendingWin(){
+    try{ localStorage.removeItem(PENDING_WIN_KEY); }catch(e){}
+  }
+
+  // Se llama justo después de enviar un pedido. Si el pedido califica,
+  // el propio backend (función RPC) genera el código — el cliente nunca
+  // decide su propio premio. El código no se muestra ahora: se guarda
+  // para aparecer la próxima vez que la persona abra la web.
+  function registrarPosiblePremioCompra(total, ordenNumero){
+    if(!SITE_CONFIG || SITE_CONFIG.promo_compra_activa !== true) return;
+    if(!(total >= Number(SITE_CONFIG.promo_compra_monto_minimo))) return;
+
+    fetch(SUPABASE_URL + "/rest/v1/rpc/crear_codigo_compra", {
+      method:"POST",
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Authorization":"Bearer " + SUPABASE_ANON_KEY, "Content-Type":"application/json" },
+      body: JSON.stringify({ p_monto:total, p_orden_numero:String(ordenNumero) })
+    }).then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(rows){
+        var row = rows && rows[0];
+        if(!row || !row.codigo) return;
+        savePendingWin({ codigo:row.codigo, premio_texto:row.premio_texto, mostrado:false });
+      }).catch(function(err){ console.error("No se pudo generar el código de promoción:", err); });
+  }
+
+  function checkPendingWin(){
+    var pending = loadPendingWin();
+    if(!pending || !pending.codigo || pending.mostrado) return;
+
+    fetch(SUPABASE_URL + "/rest/v1/rpc/validar_codigo_promo", {
+      method:"POST",
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Authorization":"Bearer " + SUPABASE_ANON_KEY, "Content-Type":"application/json" },
+      body: JSON.stringify({ p_codigo:pending.codigo })
+    }).then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(rows){
+        var row = rows && rows[0];
+        if(!row || row.usado){ clearPendingWin(); return; }
+        showWinDialog({
+          kicker:"¡Gracias por volver!",
+          title:"¡Felicidades, ganaste!",
+          prize:row.premio_texto,
+          codigo:row.codigo,
+          usado:false
+        });
+        pending.mostrado = true;
+        savePendingWin(pending);
+      }).catch(function(){ /* si falla la validación simplemente no se muestra */ });
+  }
+
+  /* ---------- Códigos premiados (tarjeta de regalo vía QR) ---------- */
+  function checkQrWin(){
+    var params = new URLSearchParams(window.location.search);
+    var codigo = params.get("promo") || params.get("codigo");
+    if(!codigo) return;
+
+    fetch(SUPABASE_URL + "/rest/v1/rpc/validar_codigo_promo", {
+      method:"POST",
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Authorization":"Bearer " + SUPABASE_ANON_KEY, "Content-Type":"application/json" },
+      body: JSON.stringify({ p_codigo:codigo })
+    }).then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(rows){
+        var row = rows && rows[0];
+        if(!row || row.tipo !== "premiado") return;
+        showWinDialog({
+          kicker: row.usado ? "Código ya reclamado" : "¡Eres un ganador!",
+          title: row.usado ? "Este código ya fue usado" : "¡Felicidades, ganaste!",
+          prize: row.premio_texto,
+          codigo: row.codigo,
+          usado: !!row.usado
+        });
+      }).catch(function(err){ console.error("No se pudo validar el código QR:", err); });
+  }
+
+  /* =========================================================
+     ARRANQUE — configuración, cinta y promociones
+  ========================================================= */
+  loadSitioConfig().then(function(cfg){
+    renderTicker(cfg);
+    checkQrWin();
+    checkPendingWin();
+    maybeShowDebugPanel();
+  });
 
   fetchBcvEurRate();
   renderCart();
