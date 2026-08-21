@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ey Panas — Panel de Administración</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#D6303D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Fredoka:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --rojo-fuego:#D6303D;
+    --rojo-brasa:#B8232E;
+    --vinotinto:#6E1420;
+    --vinotinto-deep:#3D0B12;
+    --naranja-brasa:#F2793C;
+    --mostaza:#FFC93C;
+    --crema-pan:#FBE8C6;
+    --tinta:#240D10;
+    --verde-wa:#25D366;
+    --verde-ok:#2E9E5B;
+
+    --font-display:'Bungee','Arial Narrow',Impact,sans-serif;
+    --font-body:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+    --font-mono: ui-monospace,'SF Mono','Cascadia Mono','Courier New',monospace;
+    --header-h:60px;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; width:100%; }
+  html{ overflow-x:hidden; }
+  body{
+    min-height:100vh; min-height:100dvh;
+    background:var(--vinotinto-deep);
+    font-family:var(--font-body);
+    color:var(--tinta);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    touch-action:manipulation;
+  }
+  h1,h2,h3,p,ul{ margin:0; }
+  ul{ padding:0; list-style:none; }
+  img,svg{ display:block; max-width:100%; }
+  button{ font-family:inherit; border:none; background:none; cursor:pointer; color:inherit; touch-action:manipulation; }
+  button:disabled{ opacity:.5; cursor:default; }
+  input,select,textarea{ font-family:inherit; font-size:16px; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    height:var(--header-h);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:0 max(16px, env(safe-area-inset-left)) 0 max(16px, env(safe-area-inset-right));
+    background:var(--vinotinto);
+    border-bottom:1px solid rgba(255,201,60,.25);
+  }
+  .brand{ display:flex; align-items:center; gap:9px; min-width:0; }
+  .brand__mark{ width:30px; height:30px; flex:none; }
+  .brand__text{ display:flex; flex-direction:column; line-height:.95; min-width:0; }
+  .brand__ey{ font-family:var(--font-display); font-size:.56rem; letter-spacing:.08em; color:var(--mostaza); }
+  .brand__panas{ font-family:var(--font-display); font-size:.92rem; color:var(--crema-pan); white-space:nowrap; }
+  .logout-btn{
+    display:flex; align-items:center; gap:6px;
+    color:var(--crema-pan); opacity:.85;
+    font-size:.8rem; font-weight:600;
+    padding:9px 12px; min-height:40px;
+    border-radius:999px;
+    background:rgba(251,232,198,.1);
+    flex:none;
+  }
+  .logout-btn svg{ width:16px; height:16px; }
+
+  /* ---------- login ---------- */
+  .login-wrap{
+    min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    padding:24px max(20px, env(safe-area-inset-left));
+  }
+  .login-card{
+    width:100%; max-width:380px;
+    background:var(--crema-pan);
+    border-radius:22px;
+    padding:28px 24px 26px;
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+  }
+  .login-card__mark{ width:52px; height:52px; margin:0 auto 14px; }
+  .login-card__title{ font-family:var(--font-display); font-size:1.3rem; color:var(--vinotinto); text-align:center; }
+  .login-card__sub{ font-size:.82rem; color:rgba(36,13,16,.65); text-align:center; margin-top:6px; }
+  .login-form{ margin-top:22px; display:flex; flex-direction:column; gap:14px; }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label{ font-weight:700; font-size:.82rem; color:var(--tinta); }
+  .field input, .field select, .field textarea{
+    border:1.5px solid rgba(110,20,32,.22);
+    background:rgba(255,255,255,.6);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:.92rem;
+    color:var(--tinta);
+    outline:none;
+    width:100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--rojo-fuego); }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .login-error{
+    display:none;
+    background:rgba(214,48,61,.12);
+    border:1.5px solid rgba(214,48,61,.4);
+    color:var(--rojo-brasa);
+    font-size:.82rem; font-weight:600;
+    padding:10px 12px; border-radius:10px;
+  }
+  .login-error.is-shown{ display:block; }
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-weight:700; font-size:.92rem;
+    padding:14px 18px; min-height:48px;
+    border-radius:14px;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn--primary{ background:var(--rojo-fuego); color:#fff; box-shadow:0 8px 18px rgba(20,4,7,.3); }
+  .btn--secondary{ background:rgba(110,20,32,.1); color:var(--vinotinto); }
+  .btn--danger{ background:rgba(214,48,61,.12); color:var(--rojo-brasa); }
+  .btn--block{ width:100%; }
+  .btn svg{ width:17px; height:17px; }
+  .btn.is-loading{ opacity:.7; pointer-events:none; }
+
+  /* ---------- app shell ---------- */
+  #app{ display:none; }
+  #app.is-shown{ display:block; }
+
+  .toolbar{
+    position:sticky; top:var(--header-h); z-index:15;
+    display:flex; gap:8px; overflow-x:auto;
+    padding:10px max(16px, env(safe-area-inset-left)) 10px;
+    background:var(--vinotinto-deep);
+    border-bottom:1px solid rgba(251,232,198,.12);
+    scrollbar-width:none;
+  }
+  .toolbar::-webkit-scrollbar{ display:none; }
+  .toolbar__btn{
+    flex:none;
+    font-size:.8rem; font-weight:600;
+    color:var(--crema-pan);
+    background:rgba(251,232,198,.1);
+    border:1px solid rgba(251,232,198,.22);
+    padding:9px 15px; min-height:38px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .toolbar__btn.is-active{ background:var(--mostaza); color:var(--vinotinto); border-color:var(--mostaza); }
+
+  /* ---------- pestañas principales ---------- */
+  .apptabs{
+    position:sticky; top:var(--header-h); z-index:16;
+    display:flex; gap:6px; overflow-x:auto;
+    padding:10px max(16px, env(safe-area-inset-left)) 0;
+    background:var(--vinotinto-deep);
+    scrollbar-width:none;
+  }
+  .apptabs::-webkit-scrollbar{ display:none; }
+  .apptabs__btn{
+    flex:none;
+    display:flex; align-items:center; gap:7px;
+    font-size:.82rem; font-weight:700;
+    color:rgba(251,232,198,.65);
+    padding:10px 6px 12px;
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+  }
+  .apptabs__btn svg{ width:16px; height:16px; }
+  .apptabs__btn.is-active{ color:var(--mostaza); border-bottom-color:var(--mostaza); }
+
+  .view-panel{ display:none; }
+  .view-panel.is-active{ display:block; }
+
+  /* ---------- tarjetas de configuración (cinta / promos) ---------- */
+  .cfg-card{
+    background:var(--crema-pan);
+    border-radius:18px;
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow:0 6px 16px rgba(20,4,7,.22);
+  }
+  .cfg-card__head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:4px; }
+  .cfg-card__title{ font-weight:700; font-size:.98rem; color:var(--tinta); }
+  .cfg-card__hint{ font-size:.78rem; color:rgba(36,13,16,.6); margin-top:3px; line-height:1.4; }
+  .cfg-card .field{ margin-top:14px; }
+  .cfg-card .form-grid{ margin-top:14px; }
+
+  .day-picker{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .day-chip{
+    flex:none;
+    font-size:.78rem; font-weight:700;
+    color:var(--vinotinto);
+    background:rgba(110,20,32,.08);
+    border:1.5px solid rgba(110,20,32,.2);
+    padding:8px 12px; min-height:38px;
+    border-radius:999px;
+  }
+  .day-chip.is-on{ background:var(--rojo-fuego); color:#fff; border-color:var(--rojo-fuego); }
+
+  .dir-picker{ display:flex; gap:8px; margin-top:14px; }
+  .dir-option{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:12px 8px;
+    border-radius:14px;
+    border:1.5px solid rgba(110,20,32,.2);
+    background:rgba(255,255,255,.5);
+    color:var(--vinotinto);
+    font-size:.76rem; font-weight:700;
+  }
+  .dir-option svg{ width:22px; height:22px; }
+  .dir-option.is-on{ background:var(--rojo-fuego); color:#fff; border-color:var(--rojo-fuego); }
+
+  .ticker-preview{
+    margin-top:14px; overflow:hidden;
+    border-radius:12px;
+    background:linear-gradient(90deg, var(--rojo-brasa), var(--naranja-brasa), var(--rojo-brasa));
+    border:1px solid rgba(110,20,32,.25);
+  }
+  .ticker-preview__track{
+    display:flex; align-items:center; width:max-content;
+    padding:8px 0;
+    animation:tickerPreviewRTL 14s linear infinite;
+  }
+  .ticker-preview.dir-ltr .ticker-preview__track{ animation-name:tickerPreviewLTR; }
+  .ticker-preview__item{
+    flex:none; white-space:nowrap;
+    font-family:var(--font-display); font-size:.68rem; color:var(--crema-pan);
+    padding:0 20px; border-right:1px dashed rgba(251,232,198,.4);
+  }
+  @keyframes tickerPreviewRTL{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @keyframes tickerPreviewLTR{ from{ transform:translateX(-50%); } to{ transform:translateX(0); } }
+
+  .cfg-save{ display:flex; justify-content:flex-end; margin-top:14px; }
+  .cfg-save .btn{ min-width:160px; }
+
+  .promo-subhead{ display:flex; align-items:center; gap:8px; margin:22px 0 2px; padding-top:16px; border-top:2px dashed rgba(251,232,198,.18); }
+  .promo-subhead:first-child{ margin-top:0; padding-top:0; border-top:none; }
+  .promo-subhead svg{ width:18px; height:18px; color:var(--mostaza); }
+  .promo-subhead h2{ font-family:var(--font-display); font-size:.92rem; color:var(--crema-pan); }
+
+  .gen-row{ display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-top:14px; }
+  .gen-row .field{ margin-top:0; flex:1; min-width:160px; }
+  .gen-row .field--qty{ flex:0 0 90px; min-width:0; }
+  .gen-row .btn{ flex:none; height:48px; }
+
+  .codes-toolbar{ display:flex; gap:8px; margin:16px 0 10px; flex-wrap:wrap; }
+  .codes-filter{ display:flex; gap:6px; flex:1; min-width:0; overflow-x:auto; scrollbar-width:none; }
+  .codes-filter::-webkit-scrollbar{ display:none; }
+  .codes-search{ flex:0 0 100%; }
+  @media (min-width:520px){ .codes-search{ flex:0 0 200px; } }
+
+  .code-row{
+    background:var(--crema-pan); border-radius:14px; padding:12px;
+    margin-bottom:8px; box-shadow:0 4px 12px rgba(20,4,7,.18);
+  }
+  .code-row__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .code-row__code{ font-family:var(--font-mono); font-weight:700; font-size:.94rem; color:var(--vinotinto); letter-spacing:.03em; }
+  .code-row__badges{ display:flex; gap:6px; flex:none; }
+  .code-row__badge{ font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:3px 8px; border-radius:999px; }
+  .code-row__badge--compra{ background:rgba(242,121,60,.18); color:#9a4c1c; }
+  .code-row__badge--premiado{ background:rgba(255,201,60,.3); color:#8a6300; }
+  .code-row__badge--usado{ background:rgba(110,20,32,.12); color:var(--vinotinto); }
+  .code-row__badge--libre{ background:rgba(46,158,91,.15); color:var(--verde-ok); }
+  .code-row__prize{ font-size:.82rem; color:var(--tinta); margin-top:6px; }
+  .code-row__meta{ font-size:.7rem; color:rgba(36,13,16,.55); margin-top:4px; }
+  .code-row__actions{ display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .code-row__actions button{
+    font-size:.74rem; font-weight:700;
+    padding:8px 12px; min-height:34px;
+    border-radius:999px;
+    background:rgba(110,20,32,.08); color:var(--vinotinto);
+    display:flex; align-items:center; gap:5px;
+  }
+  .code-row__actions button svg{ width:13px; height:13px; }
+  .code-row__actions button.is-danger{ background:rgba(214,48,61,.12); color:var(--rojo-brasa); }
+  .code-row__actions button.is-primary{ background:var(--verde-ok); color:#fff; }
+
+  .qr-modal-body{ display:flex; flex-direction:column; align-items:center; gap:12px; padding:6px 0 10px; }
+  .qr-modal-body img{ width:220px; height:220px; border-radius:14px; border:6px solid #fff; box-shadow:0 8px 20px rgba(20,4,7,.25); }
+  .qr-modal-body__code{ font-family:var(--font-mono); font-weight:700; font-size:1.1rem; color:var(--vinotinto); letter-spacing:.04em; }
+  .qr-modal-body__link{ font-size:.72rem; color:rgba(36,13,16,.55); word-break:break-all; text-align:center; padding:0 12px; }
+
+  main{ max-width:820px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-left)) 110px; }
+
+  .plist__empty{ text-align:center; color:var(--crema-pan); opacity:.7; padding:60px 20px; font-size:.9rem; }
+
+  .prow{
+    display:flex; align-items:center; gap:12px;
+    background:var(--crema-pan);
+    border-radius:16px;
+    padding:10px;
+    margin-bottom:10px;
+    box-shadow:0 6px 16px rgba(20,4,7,.22);
+  }
+  .prow__thumb{
+    width:56px; height:56px; border-radius:12px; flex:none;
+    background:linear-gradient(160deg, #FFE2B0, #F9C77E);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .prow__thumb img{ width:100%; height:100%; object-fit:cover; }
+  .prow__thumb svg{ width:60%; height:60%; }
+  .prow__main{ flex:1; min-width:0; }
+  .prow__name{ font-weight:700; font-size:.92rem; color:var(--tinta); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .prow__meta{ font-size:.74rem; color:rgba(36,13,16,.62); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .prow__price{ font-family:var(--font-mono); font-weight:700; color:var(--vinotinto); }
+  .prow__pill{
+    font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    padding:2px 8px; border-radius:999px;
+  }
+  .prow__pill--on{ background:rgba(46,158,91,.15); color:var(--verde-ok); }
+  .prow__pill--off{ background:rgba(110,20,32,.12); color:var(--vinotinto); }
+  .prow__actions{ display:flex; align-items:center; gap:4px; flex:none; }
+  .prow__actions button{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--vinotinto);
+  }
+  .prow__actions button svg{ width:17px; height:17px; }
+  .prow__actions button:active{ background:rgba(110,20,32,.1); }
+  .prow__actions .is-danger{ color:var(--rojo-brasa); }
+
+  .fab{
+    position:fixed; right:max(18px, env(safe-area-inset-right)); bottom:max(18px, env(safe-area-inset-bottom));
+    z-index:30;
+    width:58px; height:58px; border-radius:50%;
+    background:var(--rojo-fuego); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 12px 26px rgba(20,4,7,.45);
+    transition:transform .15s ease;
+  }
+  .fab:active{ transform:scale(.92); }
+  .fab svg{ width:26px; height:26px; }
+
+  .catalog-status{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; text-align:center; padding:60px 20px; color:var(--crema-pan);
+  }
+  .catalog-status__spinner{
+    width:36px; height:36px; border-radius:50%;
+    border:3px solid rgba(251,232,198,.25); border-top-color:var(--mostaza);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .catalog-status p{ font-size:.88rem; opacity:.85; max-width:320px; }
+
+  /* ---------- editor sheet ---------- */
+  .modal-layer{
+    position:fixed; inset:0; z-index:50;
+    display:flex; align-items:flex-end; justify-content:center;
+    visibility:hidden; pointer-events:none;
+  }
+  .modal-layer.is-open{ visibility:visible; pointer-events:auto; }
+  .modal-layer__scrim{ position:absolute; inset:0; background:rgba(20,4,7,.65); opacity:0; transition:opacity .25s ease; }
+  .modal-layer.is-open .modal-layer__scrim{ opacity:1; }
+  .sheet{
+    position:relative; z-index:1;
+    width:100%; max-width:640px; max-height:92vh;
+    background:var(--crema-pan);
+    border-radius:24px 24px 0 0;
+    box-shadow:0 -14px 40px rgba(20,4,7,.4);
+    display:flex; flex-direction:column;
+    transform:translateY(100%);
+    transition:transform .3s cubic-bezier(.32,.72,0,1);
+  }
+  .modal-layer.is-open .sheet{ transform:translateY(0); }
+  @media (min-width:720px){
+    .modal-layer{ align-items:center; }
+    .sheet{ border-radius:20px; max-height:88vh; transform:translateY(24px) scale(.97); opacity:0; transition:transform .25s ease, opacity .25s ease; }
+    .modal-layer.is-open .sheet{ transform:translateY(0) scale(1); opacity:1; }
+  }
+  .sheet__handle{ width:40px; height:4px; border-radius:99px; background:rgba(110,20,32,.25); margin:10px auto 0; flex:none; }
+  .sheet__head{ display:flex; align-items:center; gap:12px; padding:14px 18px 8px; flex:none; }
+  .sheet__title{ font-weight:700; font-size:1.05rem; color:var(--tinta); flex:1; }
+  .sheet__close{ flex:none; width:38px; height:38px; border-radius:50%; background:rgba(110,20,32,.1); display:flex; align-items:center; justify-content:center; }
+  .sheet__close svg{ width:16px; height:16px; color:var(--vinotinto); }
+  .sheet__body{ overflow-y:auto; padding:8px 18px 18px; }
+  .sheet__foot{ flex:none; padding:12px 18px calc(14px + env(safe-area-inset-bottom)); border-top:2px dashed rgba(110,20,32,.25); display:flex; gap:10px; }
+  .sheet__foot .btn{ flex:1; }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  .form-grid .field--full{ grid-column:1 / -1; }
+  @media (max-width:420px){ .form-grid{ grid-template-columns:1fr; } }
+
+  .img-upload{ display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .img-upload__preview{
+    width:72px; height:72px; border-radius:14px; flex:none;
+    background:linear-gradient(160deg, #FFE2B0, #F9C77E);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    position:relative;
+  }
+  .img-upload__preview img{ width:100%; height:100%; object-fit:cover; }
+  .img-upload__preview svg{ width:55%; height:55%; }
+  .img-upload__actions{ display:flex; flex-direction:column; gap:8px; flex:1; }
+  .img-upload__btnrow{ display:flex; gap:8px; flex-wrap:wrap; }
+  .file-btn{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--vinotinto); color:var(--crema-pan);
+    font-weight:700; font-size:.8rem;
+    padding:10px 14px; min-height:38px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .file-btn svg{ width:15px; height:15px; }
+  .file-btn input{ display:none; }
+  .img-upload__hint{ font-size:.72rem; color:rgba(36,13,16,.55); }
+  .img-upload__remove{ font-size:.78rem; font-weight:700; color:var(--rojo-brasa); }
+
+  .subgroup{ margin-top:20px; padding-top:16px; border-top:2px dashed rgba(110,20,32,.22); }
+  .subgroup__head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .subgroup__title{ font-weight:700; font-size:.9rem; color:var(--tinta); }
+  .subgroup__add{
+    display:flex; align-items:center; gap:5px;
+    font-size:.78rem; font-weight:700; color:var(--rojo-fuego);
+    padding:6px 10px; border-radius:999px; background:rgba(214,48,61,.1);
+  }
+  .subgroup__add svg{ width:13px; height:13px; }
+  .subgroup__hint{ font-size:.74rem; color:rgba(36,13,16,.55); margin-top:-4px; margin-bottom:10px; }
+
+  .dyn-row{
+    display:flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.5);
+    border-radius:12px; padding:8px; margin-bottom:8px;
+  }
+  .dyn-row select, .dyn-row input{
+    border:1.5px solid rgba(110,20,32,.18);
+    background:#fff; border-radius:10px;
+    padding:9px 10px; font-size:.82rem; color:var(--tinta);
+    min-width:0;
+  }
+  .dyn-row__icon{ flex:0 0 92px; }
+  .dyn-row__label{ flex:1; }
+  .dyn-row__price{ flex:0 0 78px; }
+  .dyn-row__del{
+    flex:none; width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; color:var(--rojo-brasa);
+  }
+  .dyn-row__del svg{ width:15px; height:15px; }
+  .dyn-empty{ font-size:.78rem; color:rgba(36,13,16,.5); padding:6px 2px 2px; }
+
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:2px dashed rgba(110,20,32,.22); }
+  .toggle-row__label{ font-weight:700; font-size:.88rem; }
+  .toggle{ position:relative; width:46px; height:27px; border-radius:999px; background:rgba(110,20,32,.25); flex:none; transition:background .2s ease; }
+  .toggle::after{ content:""; position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:transform .2s ease; }
+  .toggle.is-on{ background:var(--verde-ok); }
+  .toggle.is-on::after{ transform:translateX(19px); }
+
+  .field-error-text{ font-size:.76rem; color:var(--rojo-brasa); font-weight:600; margin-top:-4px; }
+
+  .toast{
+    position:fixed; left:50%; bottom:24px; z-index:70;
+    transform:translate(-50%,12px);
+    background:var(--vinotinto); color:var(--crema-pan);
+    padding:12px 20px; border-radius:999px;
+    font-size:.84rem; font-weight:600;
+    box-shadow:0 10px 22px rgba(0,0,0,.35);
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    display:flex; align-items:center; gap:8px;
+    max-width:88vw;
+  }
+  .toast svg{ width:16px; height:16px; flex:none; color:var(--mostaza); }
+  .toast.is-error svg{ color:var(--rojo-fuego); }
+  .toast.is-shown{ opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+<body>
+
+  <!-- ================= LOGIN ================= -->
+  <div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <svg class="login-card__mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="64" height="64" rx="16" fill="#6E1420"/>
+        <rect x="18" y="22" width="28" height="24" rx="12" fill="#FBE8C6"/>
+        <rect x="22" y="10" width="20" height="20" rx="9" fill="#F2793C"/>
+        <rect x="24" y="17" width="16" height="8" rx="4" fill="#240D10"/>
+      </svg>
+      <h1 class="login-card__title">Panel de administración</h1>
+      <p class="login-card__sub">Ey Panas — inicia sesión para gestionar el catálogo</p>
+
+      <div class="login-form">
+        <p class="login-error" id="loginError"></p>
+        <div class="field">
+          <label for="loginEmail">Correo</label>
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="admin@eypanas.com">
+        </div>
+        <div class="field">
+          <label for="loginPassword">Contraseña</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn--primary btn--block" id="loginBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Iniciar sesión</span>
+        </button>
+        <p class="img-upload__hint" style="text-align:center;">¿No tienes usuario todavía? Créalo desde Supabase → Authentication → Users.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APP ================= -->
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand__mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#240D10"/>
+          <rect x="18" y="22" width="28" height="24" rx="12" fill="#FBE8C6"/>
+          <rect x="22" y="10" width="20" height="20" rx="9" fill="#F2793C"/>
+          <rect x="24" y="17" width="16" height="8" rx="4" fill="#240D10"/>
+        </svg>
+        <div class="brand__text">
+          <span class="brand__ey">EY PANAS</span>
+          <span class="brand__panas">Admin · Productos</span>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Salir</span>
+      </button>
+    </header>
+
+    <nav class="apptabs" id="apptabs" aria-label="Secciones del panel">
+      <button class="apptabs__btn is-active" data-view="productos" type="button">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="18" height="7" rx="3.5" stroke="currentColor" stroke-width="2"/><path d="M6 9c0-3 2-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Productos
+      </button>
+      <button class="apptabs__btn" data-view="cinta" type="button">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18M3 16h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 8l3-4M21 8l-3-4M3 16l3 4M21 16l-3 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Cinta
+      </button>
+      <button class="apptabs__btn" data-view="promos" type="button">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7M2 7h20v5H2zM12 22V7M12 7c-1.5 0-4-1-4-3.2C8 2.3 9 2 9.8 2 11.5 2 12 4.5 12 7ZM12 7c1.5 0 4-1 4-3.2C16 2.3 15 2 14.2 2 12.5 2 12 4.5 12 7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        Promociones
+      </button>
+    </nav>
+
+    <!-- ========= VISTA: PRODUCTOS ========= -->
+    <div class="view-panel is-active" id="viewProductos">
+      <nav class="toolbar" id="toolbar" aria-label="Filtrar por categoría">
+        <button class="toolbar__btn is-active" data-cat="todas" type="button">Todas</button>
+        <button class="toolbar__btn" data-cat="perros" type="button">Perros calientes</button>
+        <button class="toolbar__btn" data-cat="pepitos" type="button">Pepitos</button>
+        <button class="toolbar__btn" data-cat="enrollados" type="button">Enrollados</button>
+        <button class="toolbar__btn" data-cat="hamburguesas" type="button">Hamburguesas</button>
+        <button class="toolbar__btn" data-cat="bebidas" type="button">Bebidas</button>
+      </nav>
+
+      <main>
+        <div class="catalog-status" id="listStatus">
+          <div class="catalog-status__spinner" aria-hidden="true"></div>
+          <p>Cargando productos…</p>
+        </div>
+        <div id="plist"></div>
+      </main>
+
+      <button class="fab" id="newProductBtn" type="button" aria-label="Nuevo producto">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- ========= VISTA: CINTA PROMOCIONAL ========= -->
+    <div class="view-panel" id="viewCinta">
+      <main>
+        <div class="cfg-card">
+          <div class="cfg-card__head">
+            <div>
+              <div class="cfg-card__title">Cinta interactiva</div>
+              <p class="cfg-card__hint">Aparece debajo del banner principal del catálogo. Actívala, escribe el mensaje y elige en qué días y hacia dónde se desplaza.</p>
+            </div>
+            <button class="toggle" id="cintaActiva" type="button" aria-pressed="false"></button>
+          </div>
+
+          <div class="field">
+            <label for="cintaTexto">Texto de la cinta</label>
+            <textarea id="cintaTexto" maxlength="200" placeholder="Ej: PROMO: Lunes de delivery gratis…"></textarea>
+          </div>
+
+          <div>
+            <label style="font-weight:700; font-size:.82rem;">Dirección del movimiento</label>
+            <div class="dir-picker">
+              <button class="dir-option" id="dirIzqDer" type="button" data-dir="izq-der">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h16M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Izquierda → Derecha
+              </button>
+              <button class="dir-option" id="dirDerIzq" type="button" data-dir="der-izq">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Derecha → Izquierda
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="cintaVelocidad">Velocidad</label>
+            <select id="cintaVelocidad">
+              <option value="28">Lenta</option>
+              <option value="18">Media</option>
+              <option value="10">Rápida</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-weight:700; font-size:.82rem;">Días en que aparece</label>
+            <div class="day-picker" id="cintaDias">
+              <button class="day-chip" type="button" data-day="lunes">Lun</button>
+              <button class="day-chip" type="button" data-day="martes">Mar</button>
+              <button class="day-chip" type="button" data-day="miercoles">Mié</button>
+              <button class="day-chip" type="button" data-day="jueves">Jue</button>
+              <button class="day-chip" type="button" data-day="viernes">Vie</button>
+              <button class="day-chip" type="button" data-day="sabado">Sáb</button>
+              <button class="day-chip" type="button" data-day="domingo">Dom</button>
+            </div>
+          </div>
+
+          <div class="ticker-preview" id="cintaPreview">
+            <div class="ticker-preview__track" id="cintaPreviewTrack"></div>
+          </div>
+
+          <div class="cfg-save">
+            <button class="btn btn--primary" id="saveCintaBtn" type="button">Guardar cinta</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ========= VISTA: PROMOCIONES ========= -->
+    <div class="view-panel" id="viewPromos">
+      <main>
+
+        <div class="promo-subhead">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <h2>Premio por monto de compra</h2>
+        </div>
+        <div class="cfg-card">
+          <div class="cfg-card__head">
+            <div>
+              <div class="cfg-card__title">Activar promoción</div>
+              <p class="cfg-card__hint">Cuando un pedido supera el monto mínimo, se genera un código automáticamente. Aparecerá en un diálogo la próxima vez que el cliente abra la web (no en el momento del pedido).</p>
+            </div>
+            <button class="toggle" id="promoCompraActiva" type="button" aria-pressed="false"></button>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="promoCompraMonto">Compra mínima (Ref.)</label>
+              <input id="promoCompraMonto" type="number" min="0" step="0.5" placeholder="30.00">
+            </div>
+            <div class="field field--full">
+              <label for="promoCompraPremio">Texto del premio</label>
+              <input id="promoCompraPremio" type="text" placeholder="Ej: Ganaste un Perro Aguacate y Queso + una bebida">
+            </div>
+          </div>
+
+          <div class="cfg-save">
+            <button class="btn btn--primary" id="savePromoCompraBtn" type="button">Guardar</button>
+          </div>
+        </div>
+
+        <div class="promo-subhead">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M19 19h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <h2>Códigos premiados (QR)</h2>
+        </div>
+        <div class="cfg-card">
+          <div class="cfg-card__head">
+            <div>
+              <div class="cfg-card__title">Activar códigos premiados</div>
+              <p class="cfg-card__hint">Genera códigos con QR para repartir. Al escanearlos, el cliente ve el catálogo con un diálogo anunciando su premio.</p>
+            </div>
+            <button class="toggle" id="promoPremiadaActiva" type="button" aria-pressed="false"></button>
+          </div>
+
+          <div class="field">
+            <label for="catalogoUrl">URL pública del catálogo</label>
+            <input id="catalogoUrl" type="url" placeholder="https://tusitio.com/catalogo.html">
+          </div>
+          <p class="img-upload__hint">Se usa para armar el enlace que codifica cada QR (catálogo + ?promo=código).</p>
+
+          <div class="cfg-save">
+            <button class="btn btn--primary" id="savePromoPremiadaBtn" type="button">Guardar</button>
+          </div>
+
+          <div class="gen-row">
+            <div class="field">
+              <label for="genPremio">Premio a otorgar</label>
+              <input id="genPremio" type="text" placeholder="Ej: Ganaste un Perro Pollo/Carne + una bebida">
+            </div>
+            <div class="field field--qty">
+              <label for="genCantidad">Cantidad</label>
+              <input id="genCantidad" type="number" min="1" max="50" value="1">
+            </div>
+            <button class="btn btn--primary" id="genCodesBtn" type="button">Generar</button>
+          </div>
+        </div>
+
+        <div class="promo-subhead">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <h2>Códigos generados</h2>
+        </div>
+        <div class="cfg-card">
+          <div class="codes-toolbar">
+            <div class="codes-filter" id="codesFilter">
+              <button class="toolbar__btn codesfilter__btn is-active" data-filter="todos" type="button">Todos</button>
+              <button class="toolbar__btn codesfilter__btn" data-filter="compra" type="button">Por compra</button>
+              <button class="toolbar__btn codesfilter__btn" data-filter="premiado" type="button">Premiados</button>
+              <button class="toolbar__btn codesfilter__btn" data-filter="libre" type="button">Disponibles</button>
+              <button class="toolbar__btn codesfilter__btn" data-filter="usado" type="button">Usados</button>
+            </div>
+          </div>
+          <div class="field codes-search">
+            <input id="codesSearch" type="text" placeholder="Buscar código…">
+          </div>
+
+          <div class="catalog-status" id="codesStatus" style="padding:30px 10px;">
+            <div class="catalog-status__spinner" aria-hidden="true"></div>
+            <p>Cargando códigos…</p>
+          </div>
+          <div id="codesList" style="margin-top:10px;"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= EDITOR SHEET ================= -->
+  <div class="modal-layer" id="editorModal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+    <div class="modal-layer__scrim" data-close-editor></div>
+    <div class="sheet">
+      <div class="sheet__handle" aria-hidden="true"></div>
+      <div class="sheet__head">
+        <h2 class="sheet__title" id="editorTitle">Nuevo producto</h2>
+        <button class="sheet__close" type="button" data-close-editor aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="sheet__body">
+        <div class="img-upload">
+          <div class="img-upload__preview" id="imgPreview"></div>
+          <div class="img-upload__actions">
+            <div class="img-upload__btnrow">
+              <label class="file-btn">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M7 9l5-5 5 5M12 4v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span id="imgBtnLabel">Subir foto</span>
+                <input type="file" id="imgFileInput" accept="image/*">
+              </label>
+              <button type="button" class="img-upload__remove" id="imgRemoveBtn" style="display:none;">Quitar foto</button>
+            </div>
+            <p class="img-upload__hint">JPG o PNG. Si no subes foto, se usa un ícono de respaldo.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field field--full">
+            <label for="fNombre">Nombre <span style="color:var(--rojo-fuego)">*</span></label>
+            <input id="fNombre" type="text" placeholder="Ej: Perro Especial">
+          </div>
+          <div class="field field--full">
+            <label for="fDescripcion">Descripción</label>
+            <textarea id="fDescripcion" placeholder="Ingredientes y detalles del producto"></textarea>
+          </div>
+          <div class="field">
+            <label for="fCategoria">Categoría <span style="color:var(--rojo-fuego)">*</span></label>
+            <select id="fCategoria">
+              <option value="perros">Perros calientes</option>
+              <option value="pepitos">Pepitos</option>
+              <option value="enrollados">Enrollados</option>
+              <option value="hamburguesas">Hamburguesas</option>
+              <option value="bebidas">Bebidas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fPrecio">Precio (USD) <span style="color:var(--rojo-fuego)">*</span></label>
+            <input id="fPrecio" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label for="fEtiqueta">Etiqueta (opcional)</label>
+            <input id="fEtiqueta" type="text" placeholder="Ej: Mixto, Agua">
+          </div>
+          <div class="field">
+            <label for="fArte">Ícono de respaldo</label>
+            <select id="fArte">
+              <option value="hotdog">Perro caliente</option>
+              <option value="sandwich">Pepito</option>
+              <option value="wrap">Enrollado</option>
+              <option value="burger">Hamburguesa</option>
+              <option value="drink">Bebida</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fOrden">Orden en su categoría</label>
+            <input id="fOrden" type="number" min="0" step="1" placeholder="1">
+          </div>
+        </div>
+
+        <div class="subgroup">
+          <div class="subgroup__head">
+            <span class="subgroup__title">Ingredientes que se pueden quitar</span>
+            <button class="subgroup__add" type="button" id="addRemovableBtn">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+              Añadir
+            </button>
+          </div>
+          <p class="subgroup__hint">El cliente los verá activados por defecto y podrá quitarlos al armar su pedido.</p>
+          <div id="removableRows"></div>
+        </div>
+
+        <div class="subgroup">
+          <div class="subgroup__head">
+            <span class="subgroup__title">Extras con costo adicional</span>
+            <button class="subgroup__add" type="button" id="addExtraBtn">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+              Añadir
+            </button>
+          </div>
+          <p class="subgroup__hint">El cliente podrá añadirlos tocando el chip correspondiente.</p>
+          <div id="extraRows"></div>
+        </div>
+
+        <div class="toggle-row">
+          <span class="toggle-row__label">Visible en el catálogo</span>
+          <button class="toggle is-on" id="fDisponible" type="button" aria-pressed="true"></button>
+        </div>
+      </div>
+
+      <div class="sheet__foot">
+        <button class="btn btn--secondary" type="button" data-close-editor>Cancelar</button>
+        <button class="btn btn--primary" id="saveProductBtn" type="button">Guardar producto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= QR DEL CÓDIGO PREMIADO ================= -->
+  <div class="modal-layer" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="modal-layer__scrim" data-close-qr></div>
+    <div class="sheet" style="max-width:380px;">
+      <div class="sheet__handle" aria-hidden="true"></div>
+      <div class="sheet__head">
+        <h2 class="sheet__title" id="qrModalTitle">Código QR</h2>
+        <button class="sheet__close" type="button" data-close-qr aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="sheet__body">
+        <div class="qr-modal-body">
+          <img id="qrModalImg" src="" alt="Código QR">
+          <span class="qr-modal-body__code" id="qrModalCode">—</span>
+          <p class="qr-modal-body__link" id="qrModalLink"></p>
+        </div>
+      </div>
+      <div class="sheet__foot">
+        <button class="btn btn--secondary" type="button" data-close-qr>Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="toastText">Listo</span>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     CONFIGURACIÓN — Supabase + ImgBB
+     Solo usamos la clave "anon/public" de Supabase aquí. La
+     escritura real está protegida por Row Level Security: sin
+     iniciar sesión con un usuario autenticado, la base de datos
+     rechaza cualquier intento de crear, editar o borrar.
+  ========================================================= */
+  var SUPABASE_URL = "https://nywamgxfjfmoyyaalzvn.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55d2FtZ3hmamZtb3l5YWFsenZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMTc2NDAsImV4cCI6MjA5OTg5MzY0MH0.1zIg0zhg9d4MIkXDDvPmGceWLMP_tUELlEAHsBGicWg";
+  var IMGBB_KEY = "b6f71e209fca57ca3bc007c4d851b380";
+
+  var STORAGE_KEY = "eypanas_admin_session";
+
+  var ICONS_META = [
+    {v:"onion",t:"Cebolla"},{v:"cheese",t:"Queso"},{v:"sauce",t:"Salsa"},{v:"bacon",t:"Tocineta"},
+    {v:"potato",t:"Papa"},{v:"egg",t:"Huevo"},{v:"pineapple",t:"Piña"},{v:"jalapeno",t:"Jalapeño"},
+    {v:"lettuce",t:"Lechuga"},{v:"tomato",t:"Tomate"},{v:"corn",t:"Maíz"},{v:"avocado",t:"Aguacate"},
+    {v:"meat",t:"Carne"},{v:"chicken",t:"Pollo"},{v:"sausage",t:"Chorizo/Salchicha"},{v:"ham",t:"Jamón"},
+    {v:"pickle",t:"Pepinillo"}
+  ];
+
+  var ART_PREVIEW = {
+    hotdog:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="26" width="48" height="22" rx="11" fill="#FBE8C6" stroke="#6E1420" stroke-width="3"/><rect x="14" y="18" width="36" height="20" rx="10" fill="#D6303D" stroke="#6E1420" stroke-width="3"/><path d="M14 32 L22 26 L30 32 L38 26 L46 32" stroke="#FFC93C" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+    sandwich:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="30" width="56" height="20" rx="10" fill="#FBE8C6" stroke="#6E1420" stroke-width="3"/><rect x="10" y="20" width="44" height="18" rx="9" fill="#F2793C" stroke="#6E1420" stroke-width="3"/><path d="M10 30c4-4 8-4 12 0s8 4 12 0 8-4 12 0 8 4 8 0" stroke="#FFC93C" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+    wrap:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="18" width="50" height="30" rx="15" fill="#FBE8C6" stroke="#6E1420" stroke-width="3" transform="rotate(-6 29 33)"/><circle cx="48" cy="22" r="9" fill="#F2793C" stroke="#6E1420" stroke-width="3" transform="rotate(-6 29 33)"/><path d="M12 26c3 4 3 12 0 16" stroke="#D6303D" stroke-width="3" fill="none" stroke-linecap="round" transform="rotate(-6 29 33)"/></svg>',
+    burger:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M8 26c0-9 8-15 24-15s24 6 24 15H8Z" fill="#F2793C" stroke="#6E1420" stroke-width="3" stroke-linejoin="round"/><rect x="7" y="26" width="50" height="6" fill="#8BAA3C"/><rect x="7" y="32" width="50" height="9" rx="3" fill="#6E1420"/><rect x="7" y="41" width="50" height="6" fill="#FFC93C"/><path d="M8 47h48c0 5-9 8-24 8S8 52 8 47Z" fill="#FBE8C6" stroke="#6E1420" stroke-width="3" stroke-linejoin="round"/></svg>',
+    drink:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M16 16 48 16 42 54 22 54Z" fill="#D6303D" stroke="#6E1420" stroke-width="3" stroke-linejoin="round"/><rect x="12" y="8" width="40" height="10" rx="4" fill="#FBE8C6" stroke="#6E1420" stroke-width="3"/><rect x="29" y="-4" width="6" height="18" rx="2" fill="#FBE8C6" stroke="#6E1420" stroke-width="2"/></svg>'
+  };
+
+  var CAT_LABEL = { perros:"Perros calientes", pepitos:"Pepitos", enrollados:"Enrollados", hamburguesas:"Hamburguesas", bebidas:"Bebidas" };
+
+  function byId(id){ return document.getElementById(id); }
+  function el(tag, cls){ var e = document.createElement(tag); if(cls) e.className = cls; return e; }
+  function money(n){ return "$" + Number(n||0).toFixed(2); }
+  function escapeHtml(s){
+    return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c];
+    });
+  }
+
+  /* =========================================================
+     TOAST
+  ========================================================= */
+  var toastTimer = null;
+  function showToast(msg, isError){
+    var toast = byId("toast");
+    byId("toastText").textContent = msg;
+    toast.classList.toggle("is-error", !!isError);
+    toast.classList.add("is-shown");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove("is-shown"); }, 3000);
+  }
+
+  /* =========================================================
+     SESIÓN / AUTENTICACIÓN (Supabase GoTrue vía REST)
+  ========================================================= */
+  var session = null; // { access_token, refresh_token, expires_at, user }
+
+  function loadStoredSession(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function persistSession(s){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+  function clearStoredSession(){
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }
+
+  function login(email, password){
+    return fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+      method:"POST",
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Content-Type":"application/json" },
+      body:JSON.stringify({ email:email, password:password })
+    }).then(function(res){
+      return res.json().then(function(data){
+        if(!res.ok){
+          var msg = (data && (data.error_description || data.msg || data.error)) || "No se pudo iniciar sesión.";
+          throw new Error(msg);
+        }
+        return data;
+      });
+    }).then(function(data){
+      session = {
+        access_token:data.access_token,
+        refresh_token:data.refresh_token,
+        expires_at:Date.now() + (data.expires_in || 3600) * 1000,
+        user:data.user
+      };
+      persistSession(session);
+      return session;
+    });
+  }
+
+  function refreshSession(){
+    if(!session || !session.refresh_token) return Promise.reject(new Error("Sin sesión"));
+    return fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+      method:"POST",
+      headers:{ "apikey":SUPABASE_ANON_KEY, "Content-Type":"application/json" },
+      body:JSON.stringify({ refresh_token:session.refresh_token })
+    }).then(function(res){
+      if(!res.ok) throw new Error("No se pudo renovar la sesión");
+      return res.json();
+    }).then(function(data){
+      session = {
+        access_token:data.access_token,
+        refresh_token:data.refresh_token || session.refresh_token,
+        expires_at:Date.now() + (data.expires_in || 3600) * 1000,
+        user:data.user || session.user
+      };
+      persistSession(session);
+      return session;
+    });
+  }
+
+  function logout(){
+    session = null;
+    clearStoredSession();
+    byId("app").classList.remove("is-shown");
+    byId("loginWrap").style.display = "";
+    byId("loginPassword").value = "";
+  }
+
+  // Envuelve fetch autenticado a la API de Supabase, renovando el token si expiró.
+  function authedFetch(path, options){
+    options = options || {};
+    var ensure = (session && session.expires_at > Date.now() + 5000)
+      ? Promise.resolve(session)
+      : refreshSession();
+
+    return ensure.then(function(){
+      options.headers = options.headers || {};
+      options.headers["apikey"] = SUPABASE_ANON_KEY;
+      options.headers["Authorization"] = "Bearer " + session.access_token;
+      return fetch(SUPABASE_URL + path, options);
+    }).then(function(res){
+      if(res.status === 401){
+        return refreshSession().then(function(){
+          options.headers["Authorization"] = "Bearer " + session.access_token;
+          return fetch(SUPABASE_URL + path, options);
+        });
+      }
+      return res;
+    }).catch(function(err){
+      logout();
+      throw err;
+    });
+  }
+
+  /* =========================================================
+     LOGIN UI
+  ========================================================= */
+  function setLoginError(msg){
+    var e = byId("loginError");
+    if(!msg){ e.classList.remove("is-shown"); e.textContent = ""; return; }
+    e.textContent = msg;
+    e.classList.add("is-shown");
+  }
+
+  byId("loginBtn").addEventListener("click", function(){
+    var email = byId("loginEmail").value.trim();
+    var pass = byId("loginPassword").value;
+    setLoginError("");
+    if(!email || !pass){ setLoginError("Ingresa tu correo y contraseña."); return; }
+
+    var btn = byId("loginBtn");
+    btn.classList.add("is-loading");
+    login(email, pass).then(function(){
+      btn.classList.remove("is-loading");
+      enterApp();
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      setLoginError(err.message || "No se pudo iniciar sesión.");
+    });
+  });
+
+  byId("loginPassword").addEventListener("keydown", function(e){
+    if(e.key === "Enter") byId("loginBtn").click();
+  });
+
+  byId("logoutBtn").addEventListener("click", function(){
+    logout();
+  });
+
+  function enterApp(){
+    byId("loginWrap").style.display = "none";
+    byId("app").classList.add("is-shown");
+    loadProducts();
+  }
+
+  /* =========================================================
+     PRODUCTOS — LISTA
+  ========================================================= */
+  var PRODUCTS = [];
+  var activeFilter = "todas";
+
+  function loadProducts(){
+    byId("listStatus").style.display = "";
+    byId("listStatus").innerHTML =
+      '<div class="catalog-status__spinner" aria-hidden="true"></div><p>Cargando productos…</p>';
+    byId("plist").innerHTML = "";
+
+    authedFetch("/rest/v1/productos?select=*&order=categoria.asc,orden.asc", { method:"GET" })
+      .then(function(res){
+        if(!res.ok) throw new Error("No se pudo cargar el catálogo (" + res.status + ")");
+        return res.json();
+      })
+      .then(function(rows){
+        PRODUCTS = rows;
+        byId("listStatus").style.display = "none";
+        renderList();
+      })
+      .catch(function(err){
+        byId("listStatus").innerHTML =
+          '<p>' + escapeHtml(err.message || "No se pudo cargar el catálogo.") + '</p>' +
+          '<button class="btn btn--secondary" id="retryListBtn" type="button" style="margin-top:6px;">Reintentar</button>';
+        var r = byId("retryListBtn");
+        if(r) r.addEventListener("click", loadProducts);
+      });
+  }
+
+  function renderList(){
+    var wrap = byId("plist");
+    wrap.innerHTML = "";
+    var items = activeFilter === "todas" ? PRODUCTS : PRODUCTS.filter(function(p){ return p.categoria === activeFilter; });
+
+    if(items.length === 0){
+      var empty = el("div","plist__empty");
+      empty.textContent = "No hay productos en esta categoría todavía. Toca + para crear el primero.";
+      wrap.appendChild(empty);
+      return;
+    }
+
+    items.forEach(function(p){
+      var row = el("div","prow");
+      var thumbHtml = p.imagen_url
+        ? '<img src="'+escapeHtml(p.imagen_url)+'" alt="'+escapeHtml(p.nombre)+'" loading="lazy">'
+        : (ART_PREVIEW[p.arte] || ART_PREVIEW.hotdog);
+      row.innerHTML =
+        '<div class="prow__thumb">'+thumbHtml+'</div>' +
+        '<div class="prow__main">' +
+          '<div class="prow__name">'+escapeHtml(p.nombre)+'</div>' +
+          '<div class="prow__meta">' +
+            '<span class="prow__price">'+money(p.precio)+'</span>' +
+            '<span>· '+escapeHtml(CAT_LABEL[p.categoria] || p.categoria)+'</span>' +
+            '<span class="prow__pill '+(p.disponible ? 'prow__pill--on' : 'prow__pill--off')+'">'+(p.disponible ? 'Visible' : 'Oculto')+'</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="prow__actions">' +
+          '<button type="button" data-edit aria-label="Editar '+escapeHtml(p.nombre)+'"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+          '<button type="button" class="is-danger" data-delete aria-label="Borrar '+escapeHtml(p.nombre)+'"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+        '</div>';
+
+      row.querySelector("[data-edit]").addEventListener("click", function(){ openEditor(p); });
+      row.querySelector("[data-delete]").addEventListener("click", function(){ confirmDelete(p); });
+
+      wrap.appendChild(row);
+    });
+  }
+
+  Array.prototype.slice.call(document.querySelectorAll("#toolbar .toolbar__btn")).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      Array.prototype.slice.call(document.querySelectorAll("#toolbar .toolbar__btn")).forEach(function(b){ b.classList.remove("is-active"); });
+      btn.classList.add("is-active");
+      activeFilter = btn.getAttribute("data-cat");
+      renderList();
+    });
+  });
+
+  function confirmDelete(p){
+    if(!window.confirm('¿Borrar "' + p.nombre + '" del catálogo? Esta acción no se puede deshacer.')) return;
+    authedFetch("/rest/v1/productos?id=eq." + encodeURIComponent(p.id), { method:"DELETE" })
+      .then(function(res){
+        if(!res.ok) throw new Error("No se pudo borrar (" + res.status + ")");
+        PRODUCTS = PRODUCTS.filter(function(x){ return x.id !== p.id; });
+        renderList();
+        showToast("Producto borrado");
+      })
+      .catch(function(err){ showToast(err.message || "No se pudo borrar el producto", true); });
+  }
+
+  /* =========================================================
+     EDITOR — abrir / cerrar
+  ========================================================= */
+  var editorModal = byId("editorModal");
+  var editingId = null;    // null = producto nuevo
+  var currentImageUrl = null;
+
+  function openEditor(product){
+    editingId = product ? product.id : null;
+    currentImageUrl = product ? (product.imagen_url || null) : null;
+
+    byId("editorTitle").textContent = product ? "Editar producto" : "Nuevo producto";
+    byId("fNombre").value = product ? product.nombre : "";
+    byId("fDescripcion").value = product ? (product.descripcion || "") : "";
+    byId("fCategoria").value = product ? product.categoria : (activeFilter !== "todas" ? activeFilter : "perros");
+    byId("fPrecio").value = product ? product.precio : "";
+    byId("fEtiqueta").value = product ? (product.etiqueta || "") : "";
+    byId("fArte").value = product ? (product.arte || "hotdog") : "hotdog";
+    byId("fOrden").value = product ? (product.orden || 0) : (PRODUCTS.filter(function(x){return x.categoria === (byId("fCategoria").value);}).length + 1);
+
+    var toggle = byId("fDisponible");
+    var visible = product ? product.disponible !== false : true;
+    toggle.classList.toggle("is-on", visible);
+    toggle.setAttribute("aria-pressed", visible ? "true":"false");
+
+    renderImagePreview();
+    byId("imgFileInput").value = "";
+
+    byId("removableRows").innerHTML = "";
+    (product && Array.isArray(product.removibles) ? product.removibles : []).forEach(function(r){ addRemovableRow(r); });
+
+    byId("extraRows").innerHTML = "";
+    (product && Array.isArray(product.extras) ? product.extras : []).forEach(function(x){ addExtraRow(x); });
+
+    editorModal.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeEditor(){
+    editorModal.classList.remove("is-open");
+    document.body.style.overflow = "";
+  }
+  document.querySelectorAll("[data-close-editor]").forEach(function(b){ b.addEventListener("click", closeEditor); });
+
+  byId("newProductBtn").addEventListener("click", function(){ openEditor(null); });
+
+  byId("fDisponible").addEventListener("click", function(){
+    var on = this.classList.toggle("is-on");
+    this.setAttribute("aria-pressed", on ? "true":"false");
+  });
+
+  /* =========================================================
+     IMAGEN (ImgBB)
+  ========================================================= */
+  function renderImagePreview(){
+    var box = byId("imgPreview");
+    var removeBtn = byId("imgRemoveBtn");
+    if(currentImageUrl){
+      box.innerHTML = '<img src="'+escapeHtml(currentImageUrl)+'" alt="Vista previa">';
+      removeBtn.style.display = "";
+    } else {
+      var arte = byId("fArte").value || "hotdog";
+      box.innerHTML = ART_PREVIEW[arte] || ART_PREVIEW.hotdog;
+      removeBtn.style.display = "none";
+    }
+  }
+
+  byId("fArte").addEventListener("change", function(){
+    if(!currentImageUrl) renderImagePreview();
+  });
+
+  byId("imgRemoveBtn").addEventListener("click", function(){
+    currentImageUrl = null;
+    renderImagePreview();
+  });
+
+  byId("imgFileInput").addEventListener("change", function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var label = byId("imgBtnLabel");
+    var prevLabel = label.textContent;
+    label.textContent = "Subiendo…";
+
+    var formData = new FormData();
+    formData.append("image", file);
+
+    fetch("https://api.imgbb.com/1/upload?key=" + IMGBB_KEY, { method:"POST", body:formData })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(!data || !data.success) throw new Error("ImgBB no aceptó la imagen.");
+        currentImageUrl = data.data.url;
+        renderImagePreview();
+        showToast("Foto subida");
+      })
+      .catch(function(err){
+        showToast(err.message || "No se pudo subir la foto", true);
+      })
+      .finally(function(){
+        label.textContent = prevLabel;
+      });
+  });
+
+  /* =========================================================
+     FILAS DINÁMICAS — removibles / extras
+  ========================================================= */
+  function iconOptionsHtml(selected){
+    return ICONS_META.map(function(o){
+      return '<option value="'+o.v+'"'+(o.v===selected?" selected":"")+'>'+o.t+'</option>';
+    }).join("");
+  }
+
+  function addRemovableRow(data){
+    var wrap = byId("removableRows");
+    var row = el("div","dyn-row");
+    row.innerHTML =
+      '<select class="dyn-row__icon" data-r-icon>'+iconOptionsHtml(data ? data.icon : "onion")+'</select>' +
+      '<input class="dyn-row__label" data-r-label type="text" placeholder="Ej: Cebolla" value="'+escapeHtml(data ? data.label : "")+'">' +
+      '<button type="button" class="dyn-row__del" data-r-del aria-label="Quitar fila"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>';
+    row.querySelector("[data-r-del]").addEventListener("click", function(){ row.remove(); });
+    wrap.appendChild(row);
+  }
+
+  function addExtraRow(data){
+    var wrap = byId("extraRows");
+    var row = el("div","dyn-row");
+    row.innerHTML =
+      '<select class="dyn-row__icon" data-x-icon>'+iconOptionsHtml(data ? data.icon : "sauce")+'</select>' +
+      '<input class="dyn-row__label" data-x-label type="text" placeholder="Ej: Tocineta" value="'+escapeHtml(data ? extraBaseName(data.label) : "")+'">' +
+      '<input class="dyn-row__price" data-x-price type="number" min="0" step="0.01" placeholder="Precio" value="'+(data ? data.price : "")+'">' +
+      '<button type="button" class="dyn-row__del" data-x-del aria-label="Quitar fila"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>';
+    row.querySelector("[data-x-del]").addEventListener("click", function(){ row.remove(); });
+    wrap.appendChild(row);
+  }
+
+  function extraBaseName(label){
+    // Los extras existentes guardan el label como "Nombre +$1.50"; aquí recuperamos solo "Nombre".
+    return String(label||"").split(" +")[0];
+  }
+
+  byId("addRemovableBtn").addEventListener("click", function(){ addRemovableRow(null); });
+  byId("addExtraBtn").addEventListener("click", function(){ addExtraRow(null); });
+
+  function collectRemovables(){
+    return Array.prototype.slice.call(document.querySelectorAll("#removableRows .dyn-row")).map(function(row){
+      var label = row.querySelector("[data-r-label]").value.trim();
+      var icon = row.querySelector("[data-r-icon]").value;
+      if(!label) return null;
+      return { id: slugify(label), label: label, icon: icon };
+    }).filter(Boolean);
+  }
+
+  function collectExtras(){
+    return Array.prototype.slice.call(document.querySelectorAll("#extraRows .dyn-row")).map(function(row){
+      var name = row.querySelector("[data-x-label]").value.trim();
+      var price = parseFloat(row.querySelector("[data-x-price]").value);
+      var icon = row.querySelector("[data-x-icon]").value;
+      if(!name || isNaN(price)) return null;
+      return { id: "ex-" + slugify(name), label: name + " +$" + price.toFixed(2), icon: icon, price: price };
+    }).filter(Boolean);
+  }
+
+  /* =========================================================
+     GUARDAR
+  ========================================================= */
+  function slugify(text){
+    return String(text)
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "item";
+  }
+
+  function uniqueId(baseSlug){
+    var existing = {};
+    PRODUCTS.forEach(function(p){ existing[p.id] = true; });
+    if(!existing[baseSlug]) return Promise.resolve(baseSlug);
+    var n = 2, candidate = baseSlug + "-" + n;
+    while(existing[candidate]){ n++; candidate = baseSlug + "-" + n; }
+    return Promise.resolve(candidate);
+  }
+
+  byId("saveProductBtn").addEventListener("click", function(){
+    var nombre = byId("fNombre").value.trim();
+    var categoria = byId("fCategoria").value;
+    var precio = parseFloat(byId("fPrecio").value);
+
+    if(!nombre){ showToast("Ponle un nombre al producto", true); return; }
+    if(isNaN(precio) || precio < 0){ showToast("Ingresa un precio válido", true); return; }
+
+    var payload = {
+      categoria: categoria,
+      nombre: nombre,
+      descripcion: byId("fDescripcion").value.trim(),
+      precio: precio,
+      etiqueta: byId("fEtiqueta").value.trim() || null,
+      arte: byId("fArte").value,
+      imagen_url: currentImageUrl,
+      removibles: collectRemovables(),
+      extras: collectExtras(),
+      disponible: byId("fDisponible").classList.contains("is-on"),
+      orden: parseInt(byId("fOrden").value, 10) || 0
+    };
+
+    var btn = byId("saveProductBtn");
+    btn.classList.add("is-loading");
+
+    var idReady = editingId ? Promise.resolve(editingId) : uniqueId(slugify(nombre));
+
+    idReady.then(function(id){
+      if(editingId){
+        return authedFetch("/rest/v1/productos?id=eq." + encodeURIComponent(id), {
+          method:"PATCH",
+          headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+          body:JSON.stringify(payload)
+        });
+      } else {
+        payload.id = id;
+        return authedFetch("/rest/v1/productos", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+          body:JSON.stringify(payload)
+        });
+      }
+    }).then(function(res){
+      if(!res.ok){
+        return res.json().catch(function(){ return {}; }).then(function(data){
+          throw new Error(data.message || "No se pudo guardar (" + res.status + ")");
+        });
+      }
+      return res.json();
+    }).then(function(){
+      btn.classList.remove("is-loading");
+      closeEditor();
+      showToast(editingId ? "Producto actualizado" : "Producto creado");
+      loadProducts();
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      showToast(err.message || "No se pudo guardar el producto", true);
+    });
+  });
+
+  /* =========================================================
+     PESTAÑAS PRINCIPALES
+  ========================================================= */
+  document.querySelectorAll(".apptabs__btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var view = btn.getAttribute("data-view");
+      document.querySelectorAll(".apptabs__btn").forEach(function(b){ b.classList.toggle("is-active", b === btn); });
+      byId("viewProductos").classList.toggle("is-active", view === "productos");
+      byId("viewCinta").classList.toggle("is-active", view === "cinta");
+      byId("viewPromos").classList.toggle("is-active", view === "promos");
+      if(view === "cinta" || view === "promos"){ ensureSiteConfigLoaded(); }
+      if(view === "promos"){ ensureCodesLoaded(); }
+    });
+  });
+
+  /* =========================================================
+     CONFIGURACIÓN DEL SITIO (cinta + promociones)
+     Vive en una sola fila fija (id = 1) de "sitio_config".
+  ========================================================= */
+  var SITE_CONFIG = null;
+  var siteConfigLoaded = false;
+  var siteConfigLoading = null;
+
+  function defaultSiteConfig(){
+    return {
+      cinta_activa:false, cinta_texto:"", cinta_direccion:"der-izq",
+      cinta_dias:["lunes","martes","miercoles","jueves","viernes","sabado","domingo"],
+      cinta_velocidad:18,
+      promo_compra_activa:false, promo_compra_monto_minimo:30, promo_compra_premio_texto:"",
+      promo_premiada_activa:false, catalogo_url:""
+    };
+  }
+
+  function ensureSiteConfigLoaded(){
+    if(siteConfigLoaded) return Promise.resolve(SITE_CONFIG);
+    if(siteConfigLoading) return siteConfigLoading;
+    siteConfigLoading = authedFetch("/rest/v1/sitio_config?select=*&id=eq.1", { method:"GET" })
+      .then(function(res){
+        if(!res.ok) throw new Error("No se pudo cargar la configuración (" + res.status + ")");
+        return res.json();
+      })
+      .then(function(rows){
+        SITE_CONFIG = (rows && rows[0]) || defaultSiteConfig();
+        siteConfigLoaded = true;
+        siteConfigLoading = null;
+        populateCintaForm(SITE_CONFIG);
+        populatePromoForms(SITE_CONFIG);
+        return SITE_CONFIG;
+      })
+      .catch(function(err){
+        siteConfigLoading = null;
+        showToast(err.message || "No se pudo cargar la configuración", true);
+        SITE_CONFIG = SITE_CONFIG || defaultSiteConfig();
+        return SITE_CONFIG;
+      });
+    return siteConfigLoading;
+  }
+
+  function setToggle(node, on){
+    node.classList.toggle("is-on", on);
+    node.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+
+  /* ---------- Cinta: poblar formulario + vista previa ---------- */
+  function setDireccion(dir){
+    byId("dirIzqDer").classList.toggle("is-on", dir === "izq-der");
+    byId("dirDerIzq").classList.toggle("is-on", dir !== "izq-der");
+  }
+
+  function populateCintaForm(cfg){
+    setToggle(byId("cintaActiva"), !!cfg.cinta_activa);
+    byId("cintaTexto").value = cfg.cinta_texto || "";
+    byId("cintaVelocidad").value = String(cfg.cinta_velocidad || 18);
+    setDireccion(cfg.cinta_direccion || "der-izq");
+    var dias = Array.isArray(cfg.cinta_dias) ? cfg.cinta_dias : [];
+    document.querySelectorAll("#cintaDias .day-chip").forEach(function(chip){
+      chip.classList.toggle("is-on", dias.indexOf(chip.getAttribute("data-day")) !== -1);
+    });
+    renderCintaPreview();
+  }
+
+  function renderCintaPreview(){
+    var wrap = byId("cintaPreview");
+    var track = byId("cintaPreviewTrack");
+    var texto = byId("cintaTexto").value.trim() || "Así se verá tu cinta…";
+    wrap.classList.toggle("dir-ltr", byId("dirIzqDer").classList.contains("is-on"));
+    var item = '<span class="ticker-preview__item">' + escapeHtml(texto) + '</span>';
+    track.innerHTML = item + item + item + item + item + item + item + item;
+    var seconds = Number(byId("cintaVelocidad").value) || 18;
+    track.style.animationDuration = seconds + "s";
+  }
+
+  byId("cintaActiva").addEventListener("click", function(){ setToggle(this, !this.classList.contains("is-on")); });
+  byId("dirIzqDer").addEventListener("click", function(){ setDireccion("izq-der"); renderCintaPreview(); });
+  byId("dirDerIzq").addEventListener("click", function(){ setDireccion("der-izq"); renderCintaPreview(); });
+  document.querySelectorAll("#cintaDias .day-chip").forEach(function(chip){
+    chip.addEventListener("click", function(){ chip.classList.toggle("is-on"); });
+  });
+  byId("cintaTexto").addEventListener("input", renderCintaPreview);
+  byId("cintaVelocidad").addEventListener("change", renderCintaPreview);
+
+  byId("saveCintaBtn").addEventListener("click", function(){
+    var texto = byId("cintaTexto").value.trim();
+    var activa = byId("cintaActiva").classList.contains("is-on");
+    if(activa && !texto){ showToast("Escribe el texto de la cinta", true); return; }
+
+    var dias = Array.prototype.slice.call(document.querySelectorAll("#cintaDias .day-chip.is-on")).map(function(c){ return c.getAttribute("data-day"); });
+    var payload = {
+      cinta_activa:activa,
+      cinta_texto:texto,
+      cinta_direccion: byId("dirIzqDer").classList.contains("is-on") ? "izq-der" : "der-izq",
+      cinta_velocidad: Number(byId("cintaVelocidad").value) || 18,
+      cinta_dias:dias
+    };
+    var btn = byId("saveCintaBtn");
+    btn.classList.add("is-loading");
+    authedFetch("/rest/v1/sitio_config?id=eq.1", {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+      body:JSON.stringify(payload)
+    }).then(function(res){
+      if(!res.ok) throw new Error("No se pudo guardar la cinta (" + res.status + ")");
+      return res.json();
+    }).then(function(rows){
+      btn.classList.remove("is-loading");
+      if(rows && rows[0]) SITE_CONFIG = rows[0];
+      showToast("Cinta actualizada");
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      showToast(err.message || "No se pudo guardar la cinta", true);
+    });
+  });
+
+  /* ---------- Promociones: poblar formularios ---------- */
+  function guessCatalogUrl(){
+    try{ return window.location.href.replace(/admin\.html.*$/i, "catalogo.html"); }
+    catch(e){ return ""; }
+  }
+
+  function populatePromoForms(cfg){
+    setToggle(byId("promoCompraActiva"), !!cfg.promo_compra_activa);
+    byId("promoCompraMonto").value = cfg.promo_compra_monto_minimo != null ? cfg.promo_compra_monto_minimo : 30;
+    byId("promoCompraPremio").value = cfg.promo_compra_premio_texto || "";
+
+    setToggle(byId("promoPremiadaActiva"), !!cfg.promo_premiada_activa);
+    byId("catalogoUrl").value = cfg.catalogo_url || guessCatalogUrl();
+  }
+
+  byId("promoCompraActiva").addEventListener("click", function(){ setToggle(this, !this.classList.contains("is-on")); });
+  byId("promoPremiadaActiva").addEventListener("click", function(){ setToggle(this, !this.classList.contains("is-on")); });
+
+  byId("savePromoCompraBtn").addEventListener("click", function(){
+    var monto = parseFloat(byId("promoCompraMonto").value);
+    var premio = byId("promoCompraPremio").value.trim();
+    var activa = byId("promoCompraActiva").classList.contains("is-on");
+    if(isNaN(monto) || monto < 0){ showToast("Ingresa un monto mínimo válido", true); return; }
+    if(activa && !premio){ showToast("Escribe el texto del premio", true); return; }
+
+    var payload = {
+      promo_compra_activa:activa,
+      promo_compra_monto_minimo:monto,
+      promo_compra_premio_texto:premio
+    };
+    var btn = byId("savePromoCompraBtn");
+    btn.classList.add("is-loading");
+    authedFetch("/rest/v1/sitio_config?id=eq.1", {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+      body:JSON.stringify(payload)
+    }).then(function(res){
+      if(!res.ok) throw new Error("No se pudo guardar (" + res.status + ")");
+      return res.json();
+    }).then(function(rows){
+      btn.classList.remove("is-loading");
+      if(rows && rows[0]) SITE_CONFIG = rows[0];
+      showToast("Promoción por compra actualizada");
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      showToast(err.message || "No se pudo guardar", true);
+    });
+  });
+
+  byId("savePromoPremiadaBtn").addEventListener("click", function(){
+    var url = byId("catalogoUrl").value.trim();
+    var payload = {
+      promo_premiada_activa: byId("promoPremiadaActiva").classList.contains("is-on"),
+      catalogo_url:url
+    };
+    var btn = byId("savePromoPremiadaBtn");
+    btn.classList.add("is-loading");
+    authedFetch("/rest/v1/sitio_config?id=eq.1", {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+      body:JSON.stringify(payload)
+    }).then(function(res){
+      if(!res.ok) throw new Error("No se pudo guardar (" + res.status + ")");
+      return res.json();
+    }).then(function(rows){
+      btn.classList.remove("is-loading");
+      if(rows && rows[0]) SITE_CONFIG = rows[0];
+      showToast("Configuración de códigos premiados actualizada");
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      showToast(err.message || "No se pudo guardar", true);
+    });
+  });
+
+  /* =========================================================
+     GENERAR CÓDIGOS PREMIADOS
+  ========================================================= */
+  function randomPromoCode(){
+    var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin caracteres ambiguos (0/O, 1/I)
+    var s = "";
+    for(var i = 0; i < 6; i++){ s += chars.charAt(Math.floor(Math.random() * chars.length)); }
+    return "EYP-" + s;
+  }
+
+  function crearCodigoPremiado(premio, triesLeft){
+    if(triesLeft <= 0) return Promise.reject(new Error("No se pudo generar un código único, intenta de nuevo"));
+    var codigo = randomPromoCode();
+    return authedFetch("/rest/v1/promo_codigos", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+      body:JSON.stringify({
+        codigo:codigo,
+        tipo:"premiado",
+        premio_texto:premio,
+        creado_por:(session && session.user && session.user.email) || null
+      })
+    }).then(function(res){
+      if(res.status === 409) return crearCodigoPremiado(premio, triesLeft - 1); // colisión, reintenta
+      if(!res.ok){
+        return res.json().catch(function(){ return {}; }).then(function(data){
+          throw new Error(data.message || ("No se pudo crear el código (" + res.status + ")"));
+        });
+      }
+      return res.json();
+    });
+  }
+
+  function generarCodigosPremiados(premio, cantidad){
+    var created = 0;
+    function loop(n){
+      if(n <= 0) return Promise.resolve(created);
+      return crearCodigoPremiado(premio, 5).then(function(){
+        created++;
+        return loop(n - 1);
+      });
+    }
+    return loop(cantidad);
+  }
+
+  byId("genCodesBtn").addEventListener("click", function(){
+    var premio = byId("genPremio").value.trim();
+    var cantidad = parseInt(byId("genCantidad").value, 10) || 1;
+    if(!premio){ showToast("Escribe el premio a otorgar", true); return; }
+    if(cantidad < 1) cantidad = 1;
+    if(cantidad > 50) cantidad = 50;
+    if(!byId("catalogoUrl").value.trim()){ showToast("Configura primero la URL pública del catálogo", true); return; }
+
+    var btn = byId("genCodesBtn");
+    btn.classList.add("is-loading");
+    generarCodigosPremiados(premio, cantidad).then(function(created){
+      btn.classList.remove("is-loading");
+      showToast(created + (created === 1 ? " código generado" : " códigos generados"));
+      byId("genPremio").value = "";
+      byId("genCantidad").value = "1";
+      loadCodigos();
+    }).catch(function(err){
+      btn.classList.remove("is-loading");
+      showToast(err.message || "No se pudieron generar los códigos", true);
+      loadCodigos();
+    });
+  });
+
+  /* =========================================================
+     LISTA DE CÓDIGOS (compra + premiados)
+  ========================================================= */
+  var CODES = [];
+  var codesLoaded = false;
+  var activeCodesFilter = "todos";
+  var codesSearchTerm = "";
+
+  function ensureCodesLoaded(){
+    if(!codesLoaded) loadCodigos();
+  }
+
+  function loadCodigos(){
+    byId("codesStatus").style.display = "";
+    byId("codesStatus").innerHTML = '<div class="catalog-status__spinner" aria-hidden="true"></div><p>Cargando códigos…</p>';
+    byId("codesList").innerHTML = "";
+
+    authedFetch("/rest/v1/promo_codigos?select=*&order=creado_en.desc", { method:"GET" })
+      .then(function(res){
+        if(!res.ok) throw new Error("No se pudieron cargar los códigos (" + res.status + ")");
+        return res.json();
+      })
+      .then(function(rows){
+        CODES = rows;
+        codesLoaded = true;
+        byId("codesStatus").style.display = "none";
+        renderCodesList();
+      })
+      .catch(function(err){
+        byId("codesStatus").innerHTML =
+          '<p>' + escapeHtml(err.message || "No se pudieron cargar los códigos.") + '</p>' +
+          '<button class="btn btn--secondary" id="retryCodesBtn" type="button" style="margin-top:6px;">Reintentar</button>';
+        var r = byId("retryCodesBtn");
+        if(r) r.addEventListener("click", loadCodigos);
+      });
+  }
+
+  document.querySelectorAll("#codesFilter .codesfilter__btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll("#codesFilter .codesfilter__btn").forEach(function(b){ b.classList.remove("is-active"); });
+      btn.classList.add("is-active");
+      activeCodesFilter = btn.getAttribute("data-filter");
+      renderCodesList();
+    });
+  });
+
+  byId("codesSearch").addEventListener("input", function(){
+    codesSearchTerm = this.value.trim().toLowerCase();
+    renderCodesList();
+  });
+
+  function renderCodesList(){
+    var wrap = byId("codesList");
+    wrap.innerHTML = "";
+
+    var items = CODES.filter(function(c){
+      if(activeCodesFilter === "compra" && c.tipo !== "compra") return false;
+      if(activeCodesFilter === "premiado" && c.tipo !== "premiado") return false;
+      if(activeCodesFilter === "libre" && c.usado) return false;
+      if(activeCodesFilter === "usado" && !c.usado) return false;
+      if(codesSearchTerm && c.codigo.toLowerCase().indexOf(codesSearchTerm) === -1) return false;
+      return true;
+    });
+
+    if(items.length === 0){
+      var empty = el("div","plist__empty");
+      empty.textContent = "No hay códigos que coincidan con este filtro.";
+      wrap.appendChild(empty);
+      return;
+    }
+
+    items.forEach(function(c){
+      var row = el("div","code-row");
+      var fecha = c.creado_en ? new Date(c.creado_en).toLocaleDateString("es-VE",{day:"2-digit",month:"short",year:"numeric"}) : "";
+      row.innerHTML =
+        '<div class="code-row__top">' +
+          '<span class="code-row__code">' + escapeHtml(c.codigo) + '</span>' +
+          '<div class="code-row__badges">' +
+            '<span class="code-row__badge code-row__badge--' + (c.tipo === "compra" ? "compra" : "premiado") + '">' + (c.tipo === "compra" ? "Compra" : "Premiado") + '</span>' +
+            '<span class="code-row__badge ' + (c.usado ? "code-row__badge--usado" : "code-row__badge--libre") + '">' + (c.usado ? "Usado" : "Disponible") + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="code-row__prize">' + escapeHtml(c.premio_texto || "") + '</div>' +
+        '<div class="code-row__meta">' +
+          (c.tipo === "compra" && c.monto_compra != null ? "Compra: " + money(c.monto_compra) + " · " : "") +
+          "Creado: " + fecha +
+          (c.usado_en ? " · Usado: " + new Date(c.usado_en).toLocaleDateString("es-VE") : "") +
+        '</div>' +
+        '<div class="code-row__actions">' +
+          (c.usado
+            ? '<button type="button" data-mark-free><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12a8 8 0 1 1 3 6.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Marcar disponible</button>'
+            : '<button type="button" class="is-primary" data-mark-used><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Marcar usado</button>') +
+          (c.tipo === "premiado" ? '<button type="button" data-view-qr><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/></svg>Ver QR</button>' : '') +
+          '<button type="button" class="is-danger" data-delete-code><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Eliminar</button>' +
+        '</div>';
+
+      var markUsedBtn = row.querySelector("[data-mark-used]");
+      if(markUsedBtn) markUsedBtn.addEventListener("click", function(){ setCodeUsado(c, true); });
+      var markFreeBtn = row.querySelector("[data-mark-free]");
+      if(markFreeBtn) markFreeBtn.addEventListener("click", function(){ setCodeUsado(c, false); });
+      var viewQrBtn = row.querySelector("[data-view-qr]");
+      if(viewQrBtn) viewQrBtn.addEventListener("click", function(){ openQrModal(c); });
+      row.querySelector("[data-delete-code]").addEventListener("click", function(){ deleteCode(c); });
+
+      wrap.appendChild(row);
+    });
+  }
+
+  function setCodeUsado(c, usado){
+    authedFetch("/rest/v1/promo_codigos?id=eq." + encodeURIComponent(c.id), {
+      method:"PATCH",
+      headers:{ "Content-Type":"application/json", "Prefer":"return=representation" },
+      body:JSON.stringify({ usado:usado, usado_en: usado ? new Date().toISOString() : null })
+    }).then(function(res){
+      if(!res.ok) throw new Error("No se pudo actualizar (" + res.status + ")");
+      return res.json();
+    }).then(function(rows){
+      var updated = rows && rows[0];
+      if(updated){ c.usado = updated.usado; c.usado_en = updated.usado_en; }
+      renderCodesList();
+      showToast(usado ? "Código marcado como usado" : "Código marcado como disponible");
+    }).catch(function(err){ showToast(err.message || "No se pudo actualizar el código", true); });
+  }
+
+  function deleteCode(c){
+    if(!window.confirm('¿Eliminar el código "' + c.codigo + '"? Esta acción no se puede deshacer.')) return;
+    authedFetch("/rest/v1/promo_codigos?id=eq." + encodeURIComponent(c.id), { method:"DELETE" })
+      .then(function(res){
+        if(!res.ok) throw new Error("No se pudo eliminar (" + res.status + ")");
+        CODES = CODES.filter(function(x){ return x.id !== c.id; });
+        renderCodesList();
+        showToast("Código eliminado");
+      })
+      .catch(function(err){ showToast(err.message || "No se pudo eliminar el código", true); });
+  }
+
+  function openQrModal(c){
+    var base = (SITE_CONFIG && SITE_CONFIG.catalogo_url) || byId("catalogoUrl").value.trim();
+    if(!base){ showToast("Configura la URL pública del catálogo primero", true); return; }
+    var sep = base.indexOf("?") === -1 ? "?" : "&";
+    var link = base + sep + "promo=" + encodeURIComponent(c.codigo);
+    var qrImg = "https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=" + encodeURIComponent(link);
+
+    byId("qrModalImg").src = qrImg;
+    byId("qrModalImg").alt = "Código QR de " + c.codigo;
+    byId("qrModalCode").textContent = c.codigo;
+    byId("qrModalLink").textContent = link;
+
+    byId("qrModal").classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  }
+  document.querySelectorAll("[data-close-qr]").forEach(function(b){
+    b.addEventListener("click", function(){
+      byId("qrModal").classList.remove("is-open");
+      document.body.style.overflow = "";
+    });
+  });
+
+  /* =========================================================
+     ARRANQUE
+  ========================================================= */
+  var stored = loadStoredSession();
+  if(stored && stored.access_token && stored.refresh_token){
+    session = stored;
+    enterApp();
+  }
+})();
+</script>
+</body>
+</html>
