@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version-cinta-promos: 2 (si ves este comentario en "Ver código fuente" del navegador, tienes el archivo correcto) -->
+<!-- version-cinta-promos: 3 (si ves este comentario en "Ver código fuente" del navegador, tienes el archivo correcto) -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -1881,6 +1881,7 @@
 
   function loadSitioConfig(){
     return fetch(SUPABASE_URL + "/rest/v1/sitio_config?select=*&id=eq.1", {
+      cache:"no-store",
       headers:{ "apikey":SUPABASE_ANON_KEY, "Authorization":"Bearer " + SUPABASE_ANON_KEY }
     }).then(function(res){
       if(!res.ok){
